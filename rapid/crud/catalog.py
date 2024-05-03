@@ -35,7 +35,12 @@ column_crud = ColumnCrud()
 
 
 class DataTypeMappingCrud(
-    GenericCrud[DataTypeMapping, DataTypeMapping.Create, DataTypeMapping.Update, DataTypeMapping.Return]):
+    GenericCrud[
+        DataTypeMapping,
+        DataTypeMapping.Create,
+        DataTypeMapping.Update,
+        DataTypeMapping.Return]
+):
     def __init__(self):
         super().__init__(model=DataTypeMapping)
 

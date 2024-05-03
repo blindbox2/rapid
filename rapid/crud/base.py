@@ -1,6 +1,5 @@
-from sqlmodel import Session, select, SQLModel
+from sqlmodel import Session, select
 from typing import Generic, TypeVar, List
-
 
 ModelType = TypeVar("ModelType", bound="SQLModel")
 CreateSchemaType = TypeVar("CreateSchemaType", bound="SQLModel")
@@ -45,7 +44,7 @@ class GenericCrud(Generic[ModelType, CreateSchemaType, UpdateSchemaType, ReturnS
 
     def delete_model(self, session: Session, model_id: int, hard_delete: bool = False) -> dict:
         db_model = self.get_model_on_id(session, model_id)
-        
+
         if hard_delete:
             session.delete(db_model)
         else:
