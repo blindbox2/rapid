@@ -1,0 +1,60 @@
+Table catalog.sources {
+  id integer [primary key, increment, not null]
+  name string(64) [not null]
+  description string(254) [null]
+  connection_details string(254) [not null]
+  datetime_created timestamp [not null] 
+  datetime_last_updated timestamp [not null]
+  is_active boolean [not null]
+}
+
+Table catalog.stages {
+  id integer [primary key, increment, not null]
+  name string(64) [not null]
+  description string(254) [null]
+  datetime_created timestamp [not null] 
+  datetime_last_updated timestamp [not null]
+  is_active boolean [not null]
+}
+
+Table catalog.tables {
+  id integer [primary key, increment, not null]
+  name string(64) [not null]
+  description string(254) [null]
+  source_location string(254) [not null]
+  stage_id integer [not null, ref: > catalog.stages.id]
+  source_id integer [not null, ref: > catalog.sources.id]
+  datetime_created timestamp [not null] 
+  datetime_last_updated timestamp [not null]
+  is_active boolean [not null]
+}
+
+Table catalog.columns {
+  id integer [primary key, increment, not null]
+  name string(64) [not null]
+  description string(254) [null]
+  data_type string(64) [not null]
+  data_type_id int [not null, ref: > catalog.data_type_mappings.id]
+  nullable boolean [not null]
+  precision int [not null]
+  scale int [not null]
+  primary_key bool [not null]
+  table_id int [not null, ref: > catalog.tables.id]
+  datetime_created timestamp [not null] 
+  datetime_last_updated timestamp [not null]
+  is_active boolean [not null]
+}
+
+
+//Point for discussion maybe move to integrations/transformations.
+Table catalog.data_type_mappings {
+  id integer [primary key, increment, not null]
+  description string(254) [null]
+  source_data_type string(65) [not null]
+  source_data_format string(128) [null]
+  sql_type string(64) [not null]
+  parquet_type string(64) [not null]
+  datetime_created timestamp [not null] 
+  datetime_last_updated timestamp [not null]
+  is_active boolean [not null]
+}
