@@ -1,7 +1,7 @@
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
-from rapid.crud.catalog import data_type_mapping_crud
-from rapid.models.catalog import DataTypeMapping
+from ...crud.catalog import data_type_mapping_crud
+from ...models.catalog import DataTypeMapping
 from pydantic import ValidationError
 
 

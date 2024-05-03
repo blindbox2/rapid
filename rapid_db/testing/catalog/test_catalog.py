@@ -1,7 +1,7 @@
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
-from rapid.models.catalog import Source, Table, Stage, Column, DataTypeMapping
-from rapid.crud.catalog import source_crud, table_crud, stage_crud, column_crud, data_type_mapping_crud
+from ...models.catalog import Source, Table, Stage, Column, DataTypeMapping
+from ...crud.catalog import source_crud, table_crud, stage_crud, column_crud, data_type_mapping_crud
 
 
 @pytest.fixture(name="session")

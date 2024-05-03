@@ -1,7 +1,7 @@
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
-from rapid.crud.catalog import source_crud
-from rapid.models.catalog import Source
+from ...crud.catalog import source_crud
+from ...models.catalog import Source
 from pydantic import ValidationError
 
 
