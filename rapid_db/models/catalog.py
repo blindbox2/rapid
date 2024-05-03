@@ -128,7 +128,7 @@ class Column(ColumnBase, CatalogBase, table=True):
 class DataTypeMappingBase(SQLModel, table=False):
     __tablename__ = "data_type_mappings"
     source_data_type: str = Field(max_length=64, sa_type=sa.String(length=64))
-    source_data_format: str = Field(max_length=128, sa_type=sa.String(length=128))
+    source_data_format: str | None = Field(max_length=128, sa_type=sa.String(length=128), default=None)
     sql_type: str = Field(max_length=64, sa_type=sa.String(length=64))
     parquet_type: str = Field(max_length=64, sa_type=sa.String(length=64))
 
