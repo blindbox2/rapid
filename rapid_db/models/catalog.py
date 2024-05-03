@@ -18,7 +18,8 @@ class SourceBase(SQLModel, table=False):
 
 
 class Source(CatalogBase, SourceBase, table=True):
-    source_tables: list["Table"] | None = Relationship(back_populates="table_source")
+    source_tables: List["Table"] | None = Relationship(back_populates="table_source")
+    source_data_type_mappings: List["DataTypeMapping"] | None = Relationship(back_populates="data_type_mapping_source")
 
     class Create(SourceBase, table=False):
         pass
@@ -64,7 +65,7 @@ class Table(TableBase, CatalogBase, table=True):
     stage_id: int = Field(foreign_key="stages.id")
     table_stage: "Stage" = Relationship(back_populates="stage_tables")
 
-    source_id: int= Field(foreign_key="sources.id")
+    source_id: int = Field(foreign_key="sources.id")
     table_source: "Source" = Relationship(back_populates="source_tables")
 
     table_columns: List["Column"] | None = Relationship(back_populates="column_table")
@@ -134,12 +135,16 @@ class DataTypeMappingBase(SQLModel, table=False):
 
 class DataTypeMapping(DataTypeMappingBase, CatalogBase, table=True):
     data_type_mapping_columns: List["Column"] | None = Relationship(back_populates="column_data_type_mapping")
+    
+    source_id: int = Field(foreign_key="sources.id")
+    data_type_mapping_source: "Source" = Relationship(back_populates="source_data_type_mappings")
 
     class Create(DataTypeMappingBase, table=False):
-        pass
+        source_id : int
 
     class Return(DataTypeMappingBase, table=False):
         id: int
+        source_id: int
         is_active: bool
 
     class Update(SQLModel, table=False):
@@ -147,3 +152,4 @@ class DataTypeMapping(DataTypeMappingBase, CatalogBase, table=True):
         source_data_format: str | None = Field(max_length=128, sa_type=sa.String(length=128), default=None)
         sql_type: str | None = Field(max_length=64, sa_type=sa.String(length=64), default=None)
         parquet_type: str | None = Field(max_length=64, sa_type=sa.String(length=64), default=None)
+        source_id : int | None

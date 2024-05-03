@@ -150,7 +150,8 @@ def test_data_type_mapping_column_relation(session: Session):
         source_data_type="test source data type",
         source_data_format="test source data format",
         sql_type="test sql type",
-        parquet_type="test parquet type"
+        parquet_type="test parquet type",
+        source_id=1
     )
     db_data_type_mapping = data_type_mapping_crud.create_model(session, data_type_mapping)
 
@@ -182,3 +183,43 @@ def test_data_type_mapping_column_relation(session: Session):
     # Check that the relation is correctly set up in both directions
     assert column in data_type_mapping.data_type_mapping_columns
     assert data_type_mapping is column.column_data_type_mapping
+
+
+def test_data_type_mapping_source_relation(session: Session):
+    source = Source.Create(
+        name="test source",
+        description="test description",
+        connection_details="test details"
+    )
+    db_source = source_crud.create_model(session, source)
+    
+    data_type_mapping = DataTypeMapping.Create(
+        source_data_type="test source data type",
+        source_data_format="test source data format",
+        sql_type="test sql type",
+        parquet_type="test parquet type",
+        source_id=db_source.id
+    )
+    data_type_mapping1 = DataTypeMapping.Create(
+        source_data_type="test source data type",
+        source_data_format="test source data format",
+        sql_type="test sql type",
+        parquet_type="test parquet type",
+        source_id=db_source.id
+    )
+    db_data_type_mapping = data_type_mapping_crud.create_model(session, data_type_mapping)
+    _ = data_type_mapping_crud.create_model(session, data_type_mapping1)
+
+    # Check that the data_type_mapping has related data_type_mappings
+    source = source_crud.get_model_on_id(session, model_id=db_source.id)
+    assert len(source.source_data_type_mappings) == 2
+    assert source.source_data_type_mappings[0].id == db_source.id
+
+    # Check that the data_type_mapping has a related source
+    data_type_mapping = data_type_mapping_crud.get_model_on_id(session, model_id=db_source.id)
+    assert data_type_mapping.source_id == source.id
+    assert data_type_mapping.data_type_mapping_source.id == source.id
+
+    # Check that the relation is correctly set up in both directions
+    assert data_type_mapping in source.source_data_type_mappings
+    assert source is data_type_mapping.data_type_mapping_source
