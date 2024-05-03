@@ -16,7 +16,8 @@ def session_fixture():
         yield session
 
 
-valid_table = Table.Create(name="1", description="1", source_location="1", stage_id=1, source_id=1)
+valid_table = Table.Create(name="1", description="1",
+                           source_location="1", stage_id=1, source_id=1)
 
 
 def test_create_table(session: Session):
@@ -32,7 +33,8 @@ def test_create_table(session: Session):
 
 def test_create_invalid_table():
     with pytest.raises(ValidationError) as exception_info:
-        _ = Table.Create(name=1, description=1, source_location=1, stage_id=[], source_id={})
+        _ = Table.Create(name=1, description=1,
+                         source_location=1, stage_id=[], source_id={})
 
     assert len(exception_info.value.errors()) == 5
 
@@ -79,13 +81,15 @@ def test_update_table(session: Session):
     db_table = table_crud.create_model(session, valid_table)
 
     table_update = Table.Update(name="2", description="2", source_location="2")
-    db_changed_table = table_crud.update_model(session, db_table.id, table_update)
+    db_changed_table = table_crud.update_model(
+        session, db_table.id, table_update)
 
     assert db_changed_table.name == "2"
     assert db_changed_table.description == "2"
     assert db_changed_table.source_location == "2"
 
-    db_changed_table_from_db = table_crud.get_model_on_id(session, model_id=db_table.id)
+    db_changed_table_from_db = table_crud.get_model_on_id(
+        session, model_id=db_table.id)
 
     assert db_changed_table_from_db.name == "2"
     assert db_changed_table_from_db.description == "2"
@@ -136,7 +140,6 @@ def test_delete_invalid(session):
 
 def test_name_source_id_unique(session):
     created_table = table_crud.create_model(session, valid_table)
-    
-    with pytest.raises(IntegrityError) as _:        
+
+    with pytest.raises(IntegrityError) as _:
         created_table = table_crud.create_model(session, valid_table)
-    

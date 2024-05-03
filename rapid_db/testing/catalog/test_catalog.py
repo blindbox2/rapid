@@ -54,7 +54,8 @@ def test_source_table_relation(session: Session):
 
 
 def test_stage_table_relation(session: Session):
-    stage = Stage.Create(name="test stage", description="test stage description")
+    stage = Stage.Create(
+        name="test stage", description="test stage description")
     db_stage = stage_crud.create_model(session, stage)
 
     table = Table.Create(
@@ -153,7 +154,8 @@ def test_data_type_mapping_column_relation(session: Session):
         parquet_type="test parquet type",
         source_id=1
     )
-    db_data_type_mapping = data_type_mapping_crud.create_model(session, data_type_mapping)
+    db_data_type_mapping = data_type_mapping_crud.create_model(
+        session, data_type_mapping)
 
     column = Column.Create(
         name="test column",
@@ -171,12 +173,14 @@ def test_data_type_mapping_column_relation(session: Session):
     _ = column_crud.create_model(session, column)
 
     # Check that the data_type_mapping has related columns
-    data_type_mapping = data_type_mapping_crud.get_model_on_id(session, model_id=db_data_type_mapping.id)
+    data_type_mapping = data_type_mapping_crud.get_model_on_id(
+        session, model_id=db_data_type_mapping.id)
     assert len(data_type_mapping.data_type_mapping_columns) == 1
     assert data_type_mapping.data_type_mapping_columns[0].id == db_data_type_mapping.id
 
     # Check that the column has a related data_type_mapping
-    column = column_crud.get_model_on_id(session, model_id=db_data_type_mapping.id)
+    column = column_crud.get_model_on_id(
+        session, model_id=db_data_type_mapping.id)
     assert column.data_type_mapping_id == data_type_mapping.id
     assert column.column_data_type_mapping.id == data_type_mapping.id
 
@@ -216,7 +220,8 @@ def test_data_type_mapping_source_relation(session: Session):
     assert source.source_data_type_mappings[0].id == db_source.id
 
     # Check that the data_type_mapping has a related source
-    data_type_mapping = data_type_mapping_crud.get_model_on_id(session, model_id=db_source.id)
+    data_type_mapping = data_type_mapping_crud.get_model_on_id(
+        session, model_id=db_source.id)
     assert data_type_mapping.source_id == source.id
     assert data_type_mapping.data_type_mapping_source.id == source.id
 

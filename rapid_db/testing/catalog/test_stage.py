@@ -75,12 +75,14 @@ def test_update_stage(session: Session):
     db_stage = stage_crud.create_model(session, valid_stage)
 
     stage_update = Stage.Update(name="2", description="2")
-    db_changed_stage = stage_crud.update_model(session, db_stage.id, stage_update)
+    db_changed_stage = stage_crud.update_model(
+        session, db_stage.id, stage_update)
 
     assert db_changed_stage.name == "2"
     assert db_changed_stage.description == "2"
 
-    db_changed_stage_from_db = stage_crud.get_model_on_id(session, model_id=db_stage.id)
+    db_changed_stage_from_db = stage_crud.get_model_on_id(
+        session, model_id=db_stage.id)
 
     assert db_changed_stage_from_db.name == "2"
     assert db_changed_stage_from_db.description == "2"

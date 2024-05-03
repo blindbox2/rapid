@@ -94,7 +94,8 @@ def test_update_column(session: Session):
     column_update = Column.Update(name="2", data_type="2", nullable=False, length=2, precision=2, scale=2,
                                   primary_key=False,
                                   data_type_mapping_id=2)
-    db_changed_column = column_crud.update_model(session, db_column.id, column_update)
+    db_changed_column = column_crud.update_model(
+        session, db_column.id, column_update)
 
     assert db_changed_column.name == "2"
     assert db_changed_column.data_type == "2"
@@ -105,7 +106,8 @@ def test_update_column(session: Session):
     assert db_changed_column.data_type_mapping_id == 2
     assert not db_changed_column.primary_key
 
-    db_changed_column_from_db = column_crud.get_model_on_id(session, model_id=db_column.id)
+    db_changed_column_from_db = column_crud.get_model_on_id(
+        session, model_id=db_column.id)
 
     assert db_changed_column_from_db.name == "2"
     assert db_changed_column_from_db.data_type == "2"
@@ -162,6 +164,6 @@ def test_delete_invalid(session):
 
 def test_name_source_id_unique(session):
     created_table = column_crud.create_model(session, valid_column)
-    
-    with pytest.raises(IntegrityError) as _:        
+
+    with pytest.raises(IntegrityError) as _:
         created_table = column_crud.create_model(session, valid_column)
