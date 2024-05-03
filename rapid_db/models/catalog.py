@@ -1,4 +1,4 @@
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
 import sqlalchemy as sa
 from typing import List
 from .base import RapidTableBase
@@ -6,7 +6,7 @@ from .base import RapidTableBase
 
 # Catalog base
 class CatalogBase(RapidTableBase, table=False):
-    # __table_args__ = {"schema": "catalog"}
+    # __table_args__ = [{"schema": "catalog"}]
     pass
 
 
@@ -18,6 +18,10 @@ class SourceBase(SQLModel, table=False):
 
 
 class Source(CatalogBase, SourceBase, table=True):
+    __table_args__ = (
+        UniqueConstraint("name", "connection_details", name="unique_source_name_connection"),
+    )
+    
     source_tables: List["Table"] | None = Relationship(back_populates="table_source")
     source_data_type_mappings: List["DataTypeMapping"] | None = Relationship(back_populates="data_type_mapping_source")
 
@@ -36,11 +40,11 @@ class Source(CatalogBase, SourceBase, table=True):
 
 class StageBase(SQLModel, table=False):
     __tablename__ = "stages"
-    name: str = Field(max_length=64, sa_type=sa.String(length=64))
+    name: str = Field(max_length=64, sa_type=sa.String(length=64), unique=True)
     description: str | None = Field(max_length=254, sa_type=sa.String(length=254), default=None)
 
 
-class Stage(StageBase, CatalogBase, table=True):
+class Stage(StageBase, CatalogBase, table=True):    
     stage_tables: List["Table"] | None = Relationship(back_populates="table_stage")
 
     class Create(StageBase):
@@ -62,6 +66,9 @@ class TableBase(SQLModel, table=False):
 
 
 class Table(TableBase, CatalogBase, table=True):
+    __table_args__ = (
+        UniqueConstraint("name", "source_id", name="unique_table_name_source_id"),
+    )
     stage_id: int = Field(foreign_key="stages.id")
     table_stage: "Stage" = Relationship(back_populates="stage_tables")
 
@@ -97,6 +104,9 @@ class ColumnBase(SQLModel, table=False):
 
 
 class Column(ColumnBase, CatalogBase, table=True):
+    __table_args__ = (
+        UniqueConstraint("name", "table_id", name="unique_column_name_table_id"),
+    )
     table_id: int = Field(foreign_key="tables.id")
     column_table: "Table" = Relationship(back_populates="table_columns")
 
@@ -134,6 +144,10 @@ class DataTypeMappingBase(SQLModel, table=False):
 
 
 class DataTypeMapping(DataTypeMappingBase, CatalogBase, table=True):
+    __table_args__ = (
+        UniqueConstraint("source_data_type", "source_id", name="unique_data_type_mapping_source_data_type_source_id"),
+    )
+    
     data_type_mapping_columns: List["Column"] | None = Relationship(back_populates="column_data_type_mapping")
     
     source_id: int = Field(foreign_key="sources.id")

@@ -3,6 +3,7 @@ from sqlmodel import Session, SQLModel, create_engine
 from ...crud.catalog import column_crud
 from ...models.catalog import Column
 from pydantic import ValidationError
+from sqlalchemy.exc import IntegrityError
 
 
 @pytest.fixture(name="session")
@@ -157,3 +158,10 @@ def test_delete_invalid(session):
         column_crud.delete_model(session, 1)
 
     assert str(exception_info.value) == f"404: column with ID: 1 not found."
+
+
+def test_name_source_id_unique(session):
+    created_table = column_crud.create_model(session, valid_column)
+    
+    with pytest.raises(IntegrityError) as _:        
+        created_table = column_crud.create_model(session, valid_column)

@@ -1,5 +1,6 @@
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
+from sqlalchemy.exc import IntegrityError
 from ...crud.catalog import source_crud
 from ...models.catalog import Source
 from pydantic import ValidationError
@@ -128,3 +129,10 @@ def test_delete_invalid(session):
         source_crud.delete_model(session, 1)
 
     assert str(exception_info.value) == f"404: source with ID: 1 not found."
+
+
+def test_name_connection_details_unique(session):
+    created_source = source_crud.create_model(session, valid_source)
+    with pytest.raises(IntegrityError) as _:
+        created_source = source_crud.create_model(session, valid_source)
+    

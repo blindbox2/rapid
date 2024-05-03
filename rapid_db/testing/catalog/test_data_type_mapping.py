@@ -3,6 +3,7 @@ from sqlmodel import Session, SQLModel, create_engine
 from ...crud.catalog import data_type_mapping_crud
 from ...models.catalog import DataTypeMapping
 from pydantic import ValidationError
+from sqlalchemy.exc import IntegrityError
 
 
 @pytest.fixture(name="session")
@@ -142,3 +143,10 @@ def test_delete_invalid(session):
         data_type_mapping_crud.delete_model(session, 1)
 
     assert str(exception_info.value) == f"404: data_type_mapping with ID: 1 not found."
+
+
+def test_name_source_id_unique(session):
+    created_table = data_type_mapping_crud.create_model(session, valid_data_type_mapping)
+    
+    with pytest.raises(IntegrityError) as _:        
+        created_table = data_type_mapping_crud.create_model(session, valid_data_type_mapping)

@@ -201,7 +201,7 @@ def test_data_type_mapping_source_relation(session: Session):
         source_id=db_source.id
     )
     data_type_mapping1 = DataTypeMapping.Create(
-        source_data_type="test source data type",
+        source_data_type="test source data type2",
         source_data_format="test source data format",
         sql_type="test sql type",
         parquet_type="test parquet type",
