@@ -15,7 +15,8 @@ def session_fixture():
         yield session
 
 
-valid_column = Column.Create(name="1", data_type="1", nullable=True, length=1, precision=1, scale=1, primary_key=True, table_id=1,
+valid_column = Column.Create(name="1", data_type="1", nullable=True, length=1, precision=1, scale=1, primary_key=True,
+                             table_id=1,
                              data_type_mapping_id=1)
 
 
@@ -34,7 +35,8 @@ def test_create_column(session: Session):
 
 def test_create_invalid_column():
     with pytest.raises(ValidationError) as exception_info:
-        _ = Column.Create(name=1, data_type=2, nullable=3, length=[], precision={}, scale=[], primary_key='', table_id=[],
+        _ = Column.Create(name=1, data_type=2, nullable=3, length=[], precision={}, scale=[], primary_key='',
+                          table_id=[],
                           data_type_mapping_id={})
 
     assert len(exception_info.value.errors()) == 9
@@ -65,7 +67,8 @@ def test_get_column_invalid(session: Session):
 
 
 def test_get_columns(session: Session):
-    column1 = Column.Create(name="3", data_type="3", nullable=True, length=3, precision=3, scale=3, primary_key=True, table_id=3,
+    column1 = Column.Create(name="3", data_type="3", nullable=True, length=3, precision=3, scale=3, primary_key=True,
+                            table_id=3,
                             data_type_mapping_id=3)
 
     _ = column_crud.create_model(session, valid_column)
@@ -87,7 +90,8 @@ def test_get_columns_invalid(session: Session):
 def test_update_column(session: Session):
     db_column = column_crud.create_model(session, valid_column)
 
-    column_update = Column.Update(name="2", data_type="2", nullable=False, length=2, precision=2, scale=2, primary_key=False,
+    column_update = Column.Update(name="2", data_type="2", nullable=False, length=2, precision=2, scale=2,
+                                  primary_key=False,
                                   data_type_mapping_id=2)
     db_changed_column = column_crud.update_model(session, db_column.id, column_update)
 

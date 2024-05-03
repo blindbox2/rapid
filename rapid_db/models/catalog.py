@@ -140,7 +140,7 @@ class DataTypeMapping(DataTypeMappingBase, CatalogBase, table=True):
     data_type_mapping_source: "Source" = Relationship(back_populates="source_data_type_mappings")
 
     class Create(DataTypeMappingBase, table=False):
-        source_id : int
+        source_id: int
 
     class Return(DataTypeMappingBase, table=False):
         id: int
@@ -152,4 +152,4 @@ class DataTypeMapping(DataTypeMappingBase, CatalogBase, table=True):
         source_data_format: str | None = Field(max_length=128, sa_type=sa.String(length=128), default=None)
         sql_type: str | None = Field(max_length=64, sa_type=sa.String(length=64), default=None)
         parquet_type: str | None = Field(max_length=64, sa_type=sa.String(length=64), default=None)
-        source_id : int | None
+        source_id: int | None

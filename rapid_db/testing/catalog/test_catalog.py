@@ -192,7 +192,7 @@ def test_data_type_mapping_source_relation(session: Session):
         connection_details="test details"
     )
     db_source = source_crud.create_model(session, source)
-    
+
     data_type_mapping = DataTypeMapping.Create(
         source_data_type="test source data type",
         source_data_format="test source data format",
@@ -207,7 +207,7 @@ def test_data_type_mapping_source_relation(session: Session):
         parquet_type="test parquet type",
         source_id=db_source.id
     )
-    db_data_type_mapping = data_type_mapping_crud.create_model(session, data_type_mapping)
+    _ = data_type_mapping_crud.create_model(session, data_type_mapping)
     _ = data_type_mapping_crud.create_model(session, data_type_mapping1)
 
     # Check that the data_type_mapping has related data_type_mappings

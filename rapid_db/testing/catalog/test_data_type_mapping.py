@@ -32,7 +32,8 @@ def test_create_data_type_mapping(session: Session):
 
 def test_create_invalid_data_type_mapping():
     with pytest.raises(ValidationError) as exception_info:
-        _ = DataTypeMapping.Create(source_data_type=False, source_data_format=1, sql_type=4, parquet_type=3, source_id="a")
+        _ = DataTypeMapping.Create(source_data_type=False, source_data_format=1, sql_type=4, parquet_type=3,
+                                   source_id="a")
 
     assert len(exception_info.value.errors()) == 5
 
@@ -104,7 +105,8 @@ def test_update_invalid(session: Session):
     _ = data_type_mapping_crud.create_model(session, valid_data_type_mapping)
 
     with pytest.raises(ValidationError) as exception_info:
-        _ = DataTypeMapping.Update(source_data_type=False, source_data_format=1, sql_type=4, parquet_type=3, source_id="a")
+        _ = DataTypeMapping.Update(source_data_type=False, source_data_format=1, sql_type=4, parquet_type=3,
+                                   source_id="a")
 
     assert len(exception_info.value.errors()) == 5
 
