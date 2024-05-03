@@ -18,7 +18,7 @@ class SourceBase(SQLModel, table=False):
 
 
 class Source(CatalogBase, SourceBase, table=True):
-    tables: list["Table"] | None = Relationship(back_populates="source")
+    source_tables: list["Table"] | None = Relationship(back_populates="table_source")
 
     class Create(SourceBase, table=False):
         pass
@@ -40,7 +40,7 @@ class StageBase(SQLModel, table=False):
 
 
 class Stage(StageBase, CatalogBase, table=True):
-    tables: List["Table"] | None = Relationship(back_populates="stage")
+    stage_tables: List["Table"] | None = Relationship(back_populates="table_stage")
 
     class Create(StageBase):
         pass
@@ -61,13 +61,13 @@ class TableBase(SQLModel, table=False):
 
 
 class Table(TableBase, CatalogBase, table=True):
-    stage_id: int | None = Field(default=None, foreign_key="stages.id")
-    stage: "Stage" = Relationship(back_populates="tables")
+    stage_id: int = Field(foreign_key="stages.id")
+    table_stage: "Stage" = Relationship(back_populates="stage_tables")
 
-    source_id: int | None = Field(default=None, foreign_key="sources.id")
-    source: "Source" = Relationship(back_populates="tables")
+    source_id: int= Field(foreign_key="sources.id")
+    table_source: "Source" = Relationship(back_populates="source_tables")
 
-    columns: List["Column"] = Relationship(back_populates="table")
+    table_columns: List["Column"] | None = Relationship(back_populates="column_table")
 
     class Create(TableBase, table=False):
         stage_id: int
@@ -96,11 +96,11 @@ class ColumnBase(SQLModel, table=False):
 
 
 class Column(ColumnBase, CatalogBase, table=True):
-    table_id: int | None = Field(default=None, foreign_key="tables.id")
-    table: "Table" = Relationship(back_populates="columns")
+    table_id: int = Field(foreign_key="tables.id")
+    column_table: "Table" = Relationship(back_populates="table_columns")
 
-    data_type_mapping_id: int | None = Field(default=None, foreign_key="data_type_mappings.id")
-    data_type_mapping: "DataTypeMapping" = Relationship(back_populates="column_type_mappings")
+    data_type_mapping_id: int = Field(foreign_key="data_type_mappings.id")
+    column_data_type_mapping: "DataTypeMapping" = Relationship(back_populates="data_type_mapping_columns")
 
     class Create(ColumnBase, table=False):
         table_id: int
@@ -133,7 +133,7 @@ class DataTypeMappingBase(SQLModel, table=False):
 
 
 class DataTypeMapping(DataTypeMappingBase, CatalogBase, table=True):
-    column_type_mappings: List["Column"] = Relationship(back_populates="data_type_mapping")
+    data_type_mapping_columns: List["Column"] | None = Relationship(back_populates="column_data_type_mapping")
 
     class Create(DataTypeMappingBase, table=False):
         pass

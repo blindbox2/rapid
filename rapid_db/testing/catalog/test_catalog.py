@@ -40,17 +40,17 @@ def test_source_table_relation(session: Session):
 
     # Check that the source has related tables (instead of "Check that the stage has a related table")
     source = source_crud.get_model_on_id(session, model_id=db_source.id)
-    assert len(source.tables) == 2
-    assert source.tables[0].id == db_table.id
+    assert len(source.source_tables) == 2
+    assert source.source_tables[0].id == db_table.id
 
     # Check that the table has a related stage
     table = table_crud.get_model_on_id(session, model_id=db_table.id)
     assert table.source_id == source.id
-    assert table.source.id == source.id
+    assert table.table_source.id == source.id
 
     # Check that the relation is correctly set up in both directions
-    assert table in source.tables
-    assert source is table.source
+    assert table in source.source_tables
+    assert source is table.table_source
 
 
 def test_stage_table_relation(session: Session):
@@ -78,17 +78,17 @@ def test_stage_table_relation(session: Session):
 
     # Check that the stage has related tables
     stage = stage_crud.get_model_on_id(session, model_id=db_stage.id)
-    assert len(stage.tables) == 2
-    assert stage.tables[0].id == db_table.id
+    assert len(stage.stage_tables) == 2
+    assert stage.stage_tables[0].id == db_table.id
 
     # Check that the table has a related stage
     table = table_crud.get_model_on_id(session, model_id=db_table.id)
     assert table.stage_id == stage.id
-    assert table.stage.id == stage.id
+    assert table.table_stage.id == stage.id
 
     # Check that the relation is correctly set up in both directions
-    assert table in stage.tables
-    assert stage is table.stage
+    assert table in stage.stage_tables
+    assert stage is table.table_stage
 
 
 def test_table_column_relation(session: Session):
@@ -132,17 +132,17 @@ def test_table_column_relation(session: Session):
 
     # Check that the table has related columns
     table = table_crud.get_model_on_id(session, model_id=db_table.id)
-    assert len(table.columns) == 2
-    assert table.columns[0].id == db_table.id
+    assert len(table.table_columns) == 2
+    assert table.table_columns[0].id == db_table.id
 
     # Check that the column has a related table
     column = column_crud.get_model_on_id(session, model_id=db_table.id)
     assert column.table_id == table.id
-    assert column.table.id == table.id
+    assert column.column_table.id == table.id
 
     # Check that the relation is correctly set up in both directions
-    assert column in table.columns
-    assert table is column.table
+    assert column in table.table_columns
+    assert table is column.column_table
 
 
 def test_data_type_mapping_column_relation(session: Session):
@@ -171,14 +171,14 @@ def test_data_type_mapping_column_relation(session: Session):
 
     # Check that the data_type_mapping has related columns
     data_type_mapping = data_type_mapping_crud.get_model_on_id(session, model_id=db_data_type_mapping.id)
-    assert len(data_type_mapping.column_type_mappings) == 1
-    assert data_type_mapping.column_type_mappings[0].id == db_data_type_mapping.id
+    assert len(data_type_mapping.data_type_mapping_columns) == 1
+    assert data_type_mapping.data_type_mapping_columns[0].id == db_data_type_mapping.id
 
     # Check that the column has a related data_type_mapping
     column = column_crud.get_model_on_id(session, model_id=db_data_type_mapping.id)
     assert column.data_type_mapping_id == data_type_mapping.id
-    assert column.data_type_mapping.id == data_type_mapping.id
+    assert column.column_data_type_mapping.id == data_type_mapping.id
 
     # Check that the relation is correctly set up in both directions
-    assert column in data_type_mapping.column_type_mappings
-    assert data_type_mapping is column.data_type_mapping
+    assert column in data_type_mapping.data_type_mapping_columns
+    assert data_type_mapping is column.column_data_type_mapping
