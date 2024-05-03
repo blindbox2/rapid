@@ -1,0 +1,15 @@
+Metadata-Version: 2.1
+Name: boilerplate
+Version: 0.1.0
+Requires-Dist: annotated-types==0.6.0
+Requires-Dist: coverage==7.5.0
+Requires-Dist: iniconfig==2.0.0
+Requires-Dist: packaging==24.0
+Requires-Dist: pluggy==1.5.0
+Requires-Dist: pydantic==2.7.1
+Requires-Dist: pydantic_core==2.18.2
+Requires-Dist: pytest==8.2.0
+Requires-Dist: pytest-cov==5.0.0
+Requires-Dist: SQLAlchemy==2.0.29
+Requires-Dist: sqlmodel==0.0.18
+Requires-Dist: typing_extensions==4.11.0

@@ -88,6 +88,7 @@ class ColumnBase(SQLModel, table=False):
     name: str = Field(max_length=64, sa_type=sa.String(length=64))
     description: str | None = Field(max_length=254, sa_type=sa.String(length=254), default=None)
     data_type: str = Field(max_length=64, sa_type=sa.String(length=64))
+    length: int | None
     nullable: bool | None
     precision: int | None
     scale: int | None
@@ -116,6 +117,7 @@ class Column(ColumnBase, CatalogBase, table=True):
         description: str | None = Field(max_length=254, sa_type=sa.String(length=254), default=None)
         data_type: str | None = Field(max_length=64, sa_type=sa.String(length=64), default=None)
         nullable: bool | None
+        length: int | None
         precision: int | None
         scale: int | None
         primary_key: bool | None = Field(default=None)
