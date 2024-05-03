@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class RapidTableBase(SQLModel, table=False):
-    id: int | None = Field(primary_key=True, default=None)
+    id: int | None = Field(primary_key=True, default=None, index=True)
     datetime_created: datetime | None = Field(default_factory=datetime.now)
     datetime_updated: datetime | None = Field(default_factory=datetime.now)
     is_active: bool = Field(default=True)
