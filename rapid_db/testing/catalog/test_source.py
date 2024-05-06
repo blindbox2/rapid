@@ -8,9 +8,7 @@ from pydantic import ValidationError
 
 @pytest.fixture(name="session")
 def session_fixture():
-    engine = create_engine(
-        "sqlite://"
-    )
+    engine = create_engine("sqlite://")
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
         yield session
@@ -75,17 +73,16 @@ def test_get_sources_invalid(session: Session):
 def test_update_source(session: Session):
     db_source = source_crud.create_model(session, valid_source)
 
-    source_update = Source.Update(
-        name="2", description="2", connection_details="2")
-    db_changed_source = source_crud.update_model(
-        session, db_source.id, source_update)
+    source_update = Source.Update(name="2", description="2", connection_details="2")
+    db_changed_source = source_crud.update_model(session, db_source.id, source_update)
 
     assert db_changed_source.name == "2"
     assert db_changed_source.description == "2"
     assert db_changed_source.connection_details == "2"
 
     db_changed_source_from_db = source_crud.get_model_on_id(
-        session, model_id=db_source.id)
+        session, model_id=db_source.id
+    )
 
     assert db_changed_source_from_db.name == "2"
     assert db_changed_source_from_db.description == "2"
