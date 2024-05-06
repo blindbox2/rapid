@@ -57,7 +57,7 @@ def test_stage_log_stage_log_message_relation(session: Session):
     db_stage_log_message = stage_log_message_crud.add_stage_log_message(
         session, stage_log_message
     )
-    _ = stage_log_message_crud.add_stage_log_message(session, stage_log_message1)
+    stage_log_message_crud.add_stage_log_message(session, stage_log_message1)
 
     # Check that the stage_log has related stage_log_messages
     assert len(db_stage_log.stage_log_stage_log_messages) == 2

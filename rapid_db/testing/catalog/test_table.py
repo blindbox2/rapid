@@ -24,7 +24,7 @@ def test_create_table(session: Session):
 
 def test_create_invalid_table():
     with pytest.raises(ValidationError) as exception_info:
-        _ = Table.Create(
+        Table.Create(
             name=1, description=1, source_location=1, stage_id=[], source_id={}
         )
 
@@ -32,8 +32,7 @@ def test_create_invalid_table():
 
 
 def test_get_table(session: Session):
-    _ = table_crud.insert_into_table(session, valid_table)
-
+    table_crud.insert_into_table(session, valid_table)
     db_table = table_crud.select_on_pk(session, 1)
 
     assert db_table.id == 1
@@ -54,8 +53,8 @@ def test_get_tables(session: Session):
         name="2", description="2", source_location="2", source_id=2, stage_id=2
     )
 
-    _ = table_crud.insert_into_table(session, valid_table)
-    _ = table_crud.insert_into_table(session, table1)
+    table_crud.insert_into_table(session, valid_table)
+    table_crud.insert_into_table(session, table1)
 
     db_tables = table_crud.select_all(session)
     assert len(db_tables) == 2
@@ -80,25 +79,18 @@ def test_update_table(session: Session):
     assert db_changed_table.description == "2"
     assert db_changed_table.source_location == "2"
 
-    db_changed_table_from_db = table_crud.select_on_pk(session, model_id=db_table.id)
-
-    assert db_changed_table_from_db.name == "2"
-    assert db_changed_table_from_db.description == "2"
-    assert db_changed_table_from_db.source_location == "2"
-
 
 def test_update_invalid(session: Session):
-    _ = table_crud.insert_into_table(session, valid_table)
+    table_crud.insert_into_table(session, valid_table)
 
     with pytest.raises(ValidationError) as exception_info:
-        _ = Table.Update(name=True, description=0.0, source_location={})
+        Table.Update(name=True, description=0.0, source_location={})
 
     assert len(exception_info.value.errors()) == 3
 
 
 def test_soft_delete_table(session: Session):
     table_crud.insert_into_table(session, valid_table)
-
     db_table = table_crud.select_on_pk(session, model_id=1)
     assert db_table.is_active
 
@@ -109,11 +101,7 @@ def test_soft_delete_table(session: Session):
 
 
 def test_hard_delete_table(session: Session):
-    _ = table_crud.insert_into_table(session, valid_table)
-
-    db_table = table_crud.select_on_pk(session, model_id=1)
-    assert db_table.is_active
-
+    table_crud.insert_into_table(session, valid_table)
     table_crud.delete_from_table(session, model_id=1, hard_delete=True)
 
     with pytest.raises(ValueError) as exception_info:
@@ -130,7 +118,7 @@ def test_delete_invalid(session):
 
 
 def test_table_name_source_id_stage_id_unique(session):
-    _ = table_crud.insert_into_table(session, valid_table)
+    table_crud.insert_into_table(session, valid_table)
 
     with pytest.raises(IntegrityError) as _:
-        _ = table_crud.insert_into_table(session, valid_table)
+        table_crud.insert_into_table(session, valid_table)

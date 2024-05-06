@@ -34,7 +34,7 @@ def test_source_table_relation(session: Session):
     )
 
     db_table = table_crud.insert_into_table(session, table)
-    _ = table_crud.insert_into_table(session, table1)
+    table_crud.insert_into_table(session, table1)
 
     # Check that the source has related tables
     source = source_crud.select_on_pk(session, model_id=db_source.id)
@@ -72,7 +72,7 @@ def test_stage_table_relation(session: Session):
     )
 
     db_table = table_crud.insert_into_table(session, table)
-    _ = table_crud.insert_into_table(session, table1)
+    table_crud.insert_into_table(session, table1)
 
     # Check that the stage has related tables
     stage = stage_crud.select_on_pk(session, model_id=db_stage.id)
@@ -125,8 +125,8 @@ def test_table_column_relation(session: Session):
         data_type_mapping_id=9,
     )
 
-    _ = column_crud.insert_into_table(session, column)
-    _ = column_crud.insert_into_table(session, column1)
+    column_crud.insert_into_table(session, column)
+    column_crud.insert_into_table(session, column1)
 
     # Check that the table has related columns
     table = table_crud.select_on_pk(session, model_id=db_table.id)
@@ -168,7 +168,7 @@ def test_data_type_mapping_column_relation(session: Session):
         data_type_mapping_id=db_data_type_mapping.id,
     )
 
-    _ = column_crud.insert_into_table(session, column)
+    column_crud.insert_into_table(session, column)
 
     # Check that the data_type_mapping has related columns
     data_type_mapping = data_type_mapping_crud.select_on_pk(
@@ -209,8 +209,8 @@ def test_data_type_mapping_source_relation(session: Session):
         parquet_type="test parquet type",
         source_id=db_source.id,
     )
-    _ = data_type_mapping_crud.insert_into_table(session, data_type_mapping)
-    _ = data_type_mapping_crud.insert_into_table(session, data_type_mapping1)
+    data_type_mapping_crud.insert_into_table(session, data_type_mapping)
+    data_type_mapping_crud.insert_into_table(session, data_type_mapping1)
 
     # Check that the data_type_mapping has related data_type_mappings
     source = source_crud.select_on_pk(session, model_id=db_source.id)

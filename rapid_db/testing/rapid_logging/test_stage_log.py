@@ -28,14 +28,13 @@ def test_open_stage_log(session: Session):
 
 def test_open_stage_log_invalid():
     with pytest.raises(ValidationError) as exception_info:
-        _ = StageLog.Open(table_id="a", stage_id="a", cdc_key="a", run_id=1)
+        StageLog.Open(table_id="a", stage_id="a", cdc_key="a", run_id=1)
 
     assert len(exception_info.value.errors()) == 4
 
 
 def test_get_stage_log(session: Session):
-    _ = stage_log_crud.open_stage_log(session, valid_stage_log)
-
+    stage_log_crud.open_stage_log(session, valid_stage_log)
     db_stage_log = stage_log_crud.get_stage_log_on_id(session, 1)
 
     assert db_stage_log.id == 1
@@ -54,7 +53,6 @@ def test_get_stage_log(session: Session):
 def test_get_stage_log_invalid(session: Session):
     with pytest.raises(ValueError) as exception_info:
         stage_log_crud.get_stage_log_on_id(session, stage_log_id=1)
-
     assert str(exception_info.value) == "404: stage_log with ID: 1 not found."
 
 
@@ -79,18 +77,16 @@ def test_close_stage_log(session: Session):
 
 
 def test_delete_stage_log(session: Session):
-    _ = stage_log_crud.open_stage_log(session, valid_stage_log)
+    stage_log_crud.open_stage_log(session, valid_stage_log)
 
     stage_log_crud.delete_stage_log(session, stage_log_id=1)
 
     with pytest.raises(ValueError) as exception_info:
         stage_log_crud.get_stage_log_on_id(session, stage_log_id=1)
-
     assert str(exception_info.value) == "404: stage_log with ID: 1 not found."
 
 
 def test_delete_stage_log_invalid(session: Session):
     with pytest.raises(ValueError) as exception_info:
         stage_log_crud.delete_stage_log(session, stage_log_id=1)
-
     assert str(exception_info.value) == "404: stage_log with ID: 1 not found."

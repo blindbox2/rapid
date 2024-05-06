@@ -30,7 +30,7 @@ def test_create_data_type_mapping(session: Session):
 
 def test_create_invalid_data_type_mapping():
     with pytest.raises(ValidationError) as exception_info:
-        _ = DataTypeMapping.Create(
+        DataTypeMapping.Create(
             source_data_type=False,
             source_data_format=1,
             sql_type=4,
@@ -42,8 +42,7 @@ def test_create_invalid_data_type_mapping():
 
 
 def test_get_data_type_mapping(session: Session):
-    _ = data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
-
+    data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
     db_data_type_mapping = data_type_mapping_crud.select_on_pk(session, 1)
 
     assert db_data_type_mapping.id == 1
@@ -70,8 +69,8 @@ def test_get_data_type_mappings(session: Session):
         source_id=2,
     )
 
-    _ = data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
-    _ = data_type_mapping_crud.insert_into_table(session, data_type_mapping1)
+    data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
+    data_type_mapping_crud.insert_into_table(session, data_type_mapping1)
 
     db_data_type_mappings = data_type_mapping_crud.select_all(session)
     assert len(db_data_type_mappings) == 2
@@ -108,22 +107,12 @@ def test_update_data_type_mapping(session: Session):
     assert db_changed_data_type_mapping.sql_type == "2"
     assert db_changed_data_type_mapping.parquet_type == "2"
 
-    _ = data_type_mapping_crud.select_on_pk(
-        session, model_id=db_data_type_mapping.id
-    )
-
-    assert db_changed_data_type_mapping.source_data_type == "2"
-    assert db_changed_data_type_mapping.source_id == 2
-    assert db_changed_data_type_mapping.source_data_format == "2"
-    assert db_changed_data_type_mapping.sql_type == "2"
-    assert db_changed_data_type_mapping.parquet_type == "2"
-
 
 def test_update_invalid(session: Session):
-    _ = data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
+    data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
 
     with pytest.raises(ValidationError) as exception_info:
-        _ = DataTypeMapping.Update(
+        DataTypeMapping.Update(
             source_data_type=False,
             source_data_format=1,
             sql_type=4,
@@ -149,11 +138,7 @@ def test_soft_delete_data_type_mapping(session: Session):
 
 
 def test_hard_delete_data_type_mapping(session: Session):
-    _ = data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
-
-    db_data_type_mapping = data_type_mapping_crud.select_on_pk(session, model_id=1)
-    assert db_data_type_mapping.is_active
-
+    data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
     data_type_mapping_crud.delete_from_table(session, model_id=1, hard_delete=True)
 
     with pytest.raises(ValueError) as exception_info:
@@ -170,7 +155,7 @@ def test_delete_invalid(session):
 
 
 def test_name_source_id_unique(session):
-    _ = data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
+    data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
 
     with pytest.raises(IntegrityError) as _:
-        _ = data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
+        data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)

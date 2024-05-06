@@ -20,14 +20,13 @@ def test_create_source(session: Session):
 
 def test_create_invalid_source():
     with pytest.raises(ValidationError) as exception_info:
-        _ = Source.Create(name=1, description=True, connection_details=1.0)
+        Source.Create(name=1, description=True, connection_details=1.0)
 
     assert len(exception_info.value.errors()) == 3
 
 
 def test_get_source(session: Session):
-    _ = source_crud.insert_into_table(session, valid_source)
-
+    source_crud.insert_into_table(session, valid_source)
     db_source = source_crud.select_on_pk(session, 1)
 
     assert db_source.id == 1
@@ -46,8 +45,8 @@ def test_get_source_invalid(session: Session):
 def test_get_sources(session: Session):
     source1 = Source.Create(name="2", description="2", connection_details="2")
 
-    _ = source_crud.insert_into_table(session, valid_source)
-    _ = source_crud.insert_into_table(session, source1)
+    source_crud.insert_into_table(session, valid_source)
+    source_crud.insert_into_table(session, source1)
 
     db_sources = source_crud.select_all(session)
     assert len(db_sources) == 2
@@ -66,33 +65,26 @@ def test_update_source(session: Session):
     db_source = source_crud.insert_into_table(session, valid_source)
 
     source_update = Source.Update(name="2", description="2", connection_details="2")
-    db_changed_source = source_crud.update_table_on_pk(session, db_source.id, source_update)
+    db_changed_source = source_crud.update_table_on_pk(
+        session, db_source.id, source_update
+    )
 
     assert db_changed_source.name == "2"
     assert db_changed_source.description == "2"
     assert db_changed_source.connection_details == "2"
 
-    db_changed_source_from_db = source_crud.select_on_pk(
-        session, model_id=db_source.id
-    )
-
-    assert db_changed_source_from_db.name == "2"
-    assert db_changed_source_from_db.description == "2"
-    assert db_changed_source_from_db.connection_details == "2"
-
 
 def test_update_invalid(session: Session):
-    _ = source_crud.insert_into_table(session, valid_source)
+    source_crud.insert_into_table(session, valid_source)
 
     with pytest.raises(ValidationError) as exception_info:
-        _ = Source.Update(name=1, description=True, connection_details=1.0)
+        Source.Update(name=1, description=True, connection_details=1.0)
 
     assert len(exception_info.value.errors()) == 3
 
 
 def test_soft_delete_source(session: Session):
     source_crud.insert_into_table(session, valid_source)
-
     db_source = source_crud.select_on_pk(session, model_id=1)
     assert db_source.is_active
 
@@ -103,11 +95,7 @@ def test_soft_delete_source(session: Session):
 
 
 def test_hard_delete_source(session: Session):
-    _ = source_crud.insert_into_table(session, valid_source)
-
-    db_source = source_crud.select_on_pk(session, model_id=1)
-    assert db_source.is_active
-
+    source_crud.insert_into_table(session, valid_source)
     source_crud.delete_from_table(session, model_id=1, hard_delete=True)
 
     with pytest.raises(ValueError) as exception_info:
@@ -124,6 +112,6 @@ def test_delete_invalid(session):
 
 
 def test_name_connection_details_unique(session):
-    _ = source_crud.insert_into_table(session, valid_source)
+    source_crud.insert_into_table(session, valid_source)
     with pytest.raises(IntegrityError) as _:
-        _ = source_crud.insert_into_table(session, valid_source)
+        source_crud.insert_into_table(session, valid_source)

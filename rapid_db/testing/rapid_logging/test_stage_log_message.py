@@ -14,7 +14,7 @@ valid_stage_log_message = StageLogMessage.Add(
 
 def test_add_stage_log_message(session: Session):
     stage_log = StageLog.Open(table_id=1, stage_id=1, cdc_key=1)
-    _ = stage_log_crud.open_stage_log(session=session, stage_log=stage_log)
+    stage_log_crud.open_stage_log(session=session, stage_log=stage_log)
 
     added_stage_log_message = stage_log_message_crud.add_stage_log_message(
         session, valid_stage_log_message
@@ -29,19 +29,18 @@ def test_add_stage_log_message(session: Session):
 
 def test_add_stage_log_message_invalid():
     with pytest.raises(ValidationError) as exception_info:
-        _ = StageLogMessage.Add(stage_log_id="a", message=1, is_error="a")
+        StageLogMessage.Add(stage_log_id="a", message=1, is_error="a")
 
     assert len(exception_info.value.errors()) == 3
 
 
 def test_get_stage_log(session: Session):
     stage_log = StageLog.Open(table_id=1, stage_id=1, cdc_key=1)
-    _ = stage_log_crud.open_stage_log(session=session, stage_log=stage_log)
+    stage_log_crud.open_stage_log(session=session, stage_log=stage_log)
 
     added_stage_log_message = stage_log_message_crud.add_stage_log_message(
         session, valid_stage_log_message
     )
-
     db_stage_log_message = stage_log_message_crud.get_stage_log_message_on_id(
         session, added_stage_log_message.id
     )
@@ -58,13 +57,12 @@ def test_get_stage_log_message_invalid(session: Session):
         stage_log_message_crud.get_stage_log_message_on_id(
             session, stage_log_message_id=1
         )
-
     assert str(exception_info.value) == "404: stage_log_message with ID: 1 not found."
 
 
 def test_delete_stage_log_message(session: Session):
     stage_log = StageLog.Open(table_id=1, stage_id=1, cdc_key=1)
-    _ = stage_log_crud.open_stage_log(session=session, stage_log=stage_log)
+    stage_log_crud.open_stage_log(session=session, stage_log=stage_log)
 
     db_stage_log_message = stage_log_message_crud.add_stage_log_message(
         session=session, stage_log_message=valid_stage_log_message
@@ -78,7 +76,6 @@ def test_delete_stage_log_message(session: Session):
         stage_log_message_crud.get_stage_log_message_on_id(
             session, stage_log_message_id=db_stage_log_message.id
         )
-
     assert str(exception_info.value) == "404: stage_log_message with ID: 1 not found."
 
 
@@ -87,7 +84,6 @@ def test_delete_stage_log_invalid(session: Session):
         stage_log_message_crud.delete_stage_log_message(
             session=session, stage_log_message_id=1
         )
-
     assert str(exception_info.value) == "404: stage_log_message with ID: 1 not found."
 
 

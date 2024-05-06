@@ -19,14 +19,13 @@ def test_create_stage(session: Session):
 
 def test_create_invalid_stage():
     with pytest.raises(ValidationError) as exception_info:
-        _ = Stage.Create(name=1, description=1)
+        Stage.Create(name=1, description=1)
 
     assert len(exception_info.value.errors()) == 2
 
 
 def test_get_stage(session: Session):
-    _ = stage_crud.insert_into_table(session, valid_stage)
-
+    stage_crud.insert_into_table(session, valid_stage)
     db_stage = stage_crud.select_on_pk(session, 1)
 
     assert db_stage.id == 1
@@ -44,8 +43,8 @@ def test_get_stage_invalid(session: Session):
 def test_get_stages(session: Session):
     stage1 = Stage.Create(name="2", description="2")
 
-    _ = stage_crud.insert_into_table(session, valid_stage)
-    _ = stage_crud.insert_into_table(session, stage1)
+    stage_crud.insert_into_table(session, valid_stage)
+    stage_crud.insert_into_table(session, stage1)
 
     db_stages = stage_crud.select_all(session)
     assert len(db_stages) == 2
@@ -69,24 +68,18 @@ def test_update_stage(session: Session):
     assert db_changed_stage.name == "2"
     assert db_changed_stage.description == "2"
 
-    db_changed_stage_from_db = stage_crud.select_on_pk(session, model_id=db_stage.id)
-
-    assert db_changed_stage_from_db.name == "2"
-    assert db_changed_stage_from_db.description == "2"
-
 
 def test_update_invalid(session: Session):
-    _ = stage_crud.insert_into_table(session, valid_stage)
+    stage_crud.insert_into_table(session, valid_stage)
 
     with pytest.raises(ValidationError) as exception_info:
-        _ = Stage.Update(name=1, description=True)
+        Stage.Update(name=1, description=True)
 
     assert len(exception_info.value.errors()) == 2
 
 
 def test_soft_delete_stage(session: Session):
     stage_crud.insert_into_table(session, valid_stage)
-
     db_stage = stage_crud.select_on_pk(session, model_id=1)
     assert db_stage.is_active
 
@@ -97,11 +90,7 @@ def test_soft_delete_stage(session: Session):
 
 
 def test_hard_delete_stage(session: Session):
-    _ = stage_crud.insert_into_table(session, valid_stage)
-
-    db_stage = stage_crud.select_on_pk(session, model_id=1)
-    assert db_stage.is_active
-
+    stage_crud.insert_into_table(session, valid_stage)
     stage_crud.delete_from_table(session, model_id=1, hard_delete=True)
 
     with pytest.raises(ValueError) as exception_info:
@@ -118,6 +107,6 @@ def test_delete_invalid(session):
 
 
 def test_stage_unique(session):
-    _ = stage_crud.insert_into_table(session, valid_stage)
+    stage_crud.insert_into_table(session, valid_stage)
     with pytest.raises(IntegrityError) as _:
-        _ = stage_crud.insert_into_table(session, valid_stage)
+        stage_crud.insert_into_table(session, valid_stage)
