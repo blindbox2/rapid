@@ -77,13 +77,27 @@ class StageLogMessageCrud:
             f"Adding a new stage_log_message for stage_log with ID: {stage_log_message.stage_log_id}"
         )
         db_stage_log_message = StageLogMessage.model_validate(stage_log_message)
-        session.add(db_stage_log_message)
-        session.commit()
-        session.refresh(db_stage_log_message)
-        logger.info(
-            f"Added a new stage_log_message for stage_log with ID: {stage_log_message.stage_log_id}"
+
+        # Check if current stage_log is still open
+        db_stage_log = stage_log_crud.get_stage_log_on_id(
+            session=session, stage_log_id=db_stage_log_message.stage_log_id
         )
-        return db_stage_log_message
+
+        if db_stage_log.is_open:
+            session.add(db_stage_log_message)
+            session.commit()
+            session.refresh(db_stage_log_message)
+            logger.info(
+                f"Added a new stage_log_message for stage_log with ID: {stage_log_message.stage_log_id}"
+            )
+            return db_stage_log_message
+        else:
+            logger.warning(
+                f"stage_log with ID: {stage_log_message.stage_log_id} is closed"
+            )
+            raise ValueError(
+                f"403: Forbidden to add stage_log_messages to closed stage_log with ID: {stage_log_message.stage_log_id}."
+            )
 
     def get_stage_log_message_on_id(
         self, session: Session, stage_log_message_id: int

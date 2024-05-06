@@ -1,8 +1,8 @@
 import pytest
 from sqlmodel import Session
-from ...models.rapid_logging import StageLogMessage
+from ...models.rapid_logging import StageLog, StageLogMessage
 
-from ...crud.rapid_logging import stage_log_message_crud
+from ...crud.rapid_logging import stage_log_crud, stage_log_message_crud
 from pydantic import ValidationError
 from datetime import datetime
 
@@ -13,6 +13,9 @@ valid_stage_log_message = StageLogMessage.Add(
 
 
 def test_add_stage_log_message(session: Session):
+    stage_log = StageLog.Open(table_id=1, stage_id=1, cdc_key=1)
+    _ = stage_log_crud.open_stage_log(session=session, stage_log=stage_log)
+
     added_stage_log_message = stage_log_message_crud.add_stage_log_message(
         session, valid_stage_log_message
     )
@@ -32,6 +35,9 @@ def test_add_stage_log_message_invalid():
 
 
 def test_get_stage_log(session: Session):
+    stage_log = StageLog.Open(table_id=1, stage_id=1, cdc_key=1)
+    _ = stage_log_crud.open_stage_log(session=session, stage_log=stage_log)
+
     added_stage_log_message = stage_log_message_crud.add_stage_log_message(
         session, valid_stage_log_message
     )
@@ -57,6 +63,9 @@ def test_get_stage_log_message_invalid(session: Session):
 
 
 def test_delete_stage_log_message(session: Session):
+    stage_log = StageLog.Open(table_id=1, stage_id=1, cdc_key=1)
+    _ = stage_log_crud.open_stage_log(session=session, stage_log=stage_log)
+
     db_stage_log_message = stage_log_message_crud.add_stage_log_message(
         session=session, stage_log_message=valid_stage_log_message
     )
@@ -80,3 +89,19 @@ def test_delete_stage_log_invalid(session: Session):
         )
 
     assert str(exception_info.value) == "404: stage_log_message with ID: 1 not found."
+
+
+def test_adding_stage_log_message_to_closed_stage_log(session: Session):
+    stage_log_open = StageLog.Open(table_id=1, stage_id=1, cdc_key=1)
+    stage_log_crud.open_stage_log(session=session, stage_log=stage_log_open)
+
+    stage_log_close = StageLog.Close(id=1, success=True, number_of_records_processed=1)
+    stage_log_crud.close_stage_log(session, stage_log_close)
+
+    with pytest.raises(ValueError) as exception_info:
+        stage_log_message_crud.add_stage_log_message(session, valid_stage_log_message)
+
+    assert (
+        str(exception_info.value)
+        == "403: Forbidden to add stage_log_messages to closed stage_log with ID: 1."
+    )
