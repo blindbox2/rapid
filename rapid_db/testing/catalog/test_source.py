@@ -62,7 +62,7 @@ def test_get_sources_invalid(session: Session):
 
 
 def test_update_source(session: Session):
-    db_source = source_crud.insert_into_table(session, valid_source)
+    source_crud.insert_into_table(session, valid_source)
 
     source_update = Source.Update(
         id=1, name="2", description="2", connection_details="2"

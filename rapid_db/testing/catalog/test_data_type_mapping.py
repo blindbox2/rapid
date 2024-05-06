@@ -86,9 +86,7 @@ def test_get_data_type_mappings_invalid(session: Session):
 
 
 def test_update_data_type_mapping(session: Session):
-    db_data_type_mapping = data_type_mapping_crud.insert_into_table(
-        session, valid_data_type_mapping
-    )
+    data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
 
     data_type_mapping_update = DataTypeMapping.Update(
         id=1,
@@ -98,7 +96,9 @@ def test_update_data_type_mapping(session: Session):
         parquet_type="2",
         source_id=2,
     )
-    db_changed_data_type_mapping = data_type_mapping_crud.update_table_on_pk(session, data_type_mapping_update)
+    db_changed_data_type_mapping = data_type_mapping_crud.update_table_on_pk(
+        session, data_type_mapping_update
+    )
 
     assert db_changed_data_type_mapping.source_data_type == "2"
     assert db_changed_data_type_mapping.source_id == 2
