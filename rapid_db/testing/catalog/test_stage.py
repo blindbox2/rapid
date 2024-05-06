@@ -1,17 +1,9 @@
 import pytest
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session
 from ...crud.catalog import stage_crud
 from ...models.catalog import Stage
 from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError
-
-
-@pytest.fixture(name="session")
-def session_fixture():
-    engine = create_engine("sqlite://")
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as session:
-        yield session
 
 
 valid_stage = Stage.Create(name="1", description="1")
@@ -46,7 +38,7 @@ def test_get_stage_invalid(session: Session):
     with pytest.raises(ValueError) as exception_info:
         stage_crud.get_model_on_id(session, model_id=1)
 
-    assert str(exception_info.value) == f"404: stage with ID: 1 not found."
+    assert str(exception_info.value) == "404: stage with ID: 1 not found."
 
 
 def test_get_stages(session: Session):
@@ -65,7 +57,7 @@ def test_get_stages_invalid(session: Session):
     with pytest.raises(ValueError) as exception_info:
         stage_crud.get_all_models(session)
 
-    assert str(exception_info.value) == f"404: no stages found."
+    assert str(exception_info.value) == "404: no stages found."
 
 
 def test_update_stage(session: Session):
@@ -115,17 +107,17 @@ def test_hard_delete_stage(session: Session):
     with pytest.raises(ValueError) as exception_info:
         stage_crud.get_model_on_id(session, 1)
 
-    assert str(exception_info.value) == f"404: stage with ID: 1 not found."
+    assert str(exception_info.value) == "404: stage with ID: 1 not found."
 
 
 def test_delete_invalid(session):
     with pytest.raises(ValueError) as exception_info:
         stage_crud.delete_model(session, 1)
 
-    assert str(exception_info.value) == f"404: stage with ID: 1 not found."
+    assert str(exception_info.value) == "404: stage with ID: 1 not found."
 
 
 def test_stage_unique(session):
-    created_stage = stage_crud.create_model(session, valid_stage)
+    _ = stage_crud.create_model(session, valid_stage)
     with pytest.raises(IntegrityError) as _:
-        created_stage = stage_crud.create_model(session, valid_stage)
+        _ = stage_crud.create_model(session, valid_stage)

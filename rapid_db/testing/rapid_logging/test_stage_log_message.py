@@ -1,18 +1,10 @@
 import pytest
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session
 from ...models.rapid_logging import StageLogMessage
 
 from ...crud.rapid_logging import stage_log_message_crud
 from pydantic import ValidationError
 from datetime import datetime
-
-
-@pytest.fixture(name="session")
-def session_fixture():
-    engine = create_engine("sqlite://")
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as session:
-        yield session
 
 
 valid_stage_log_message = StageLogMessage.Add(

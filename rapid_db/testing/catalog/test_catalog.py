@@ -1,5 +1,4 @@
-import pytest
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session
 from ...models.catalog import Source, Table, Stage, Column, DataTypeMapping
 from ...crud.catalog import (
     source_crud,
@@ -8,14 +7,6 @@ from ...crud.catalog import (
     column_crud,
     data_type_mapping_crud,
 )
-
-
-@pytest.fixture(name="session")
-def session_fixture():
-    engine = create_engine("sqlite://")
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as session:
-        yield session
 
 
 def test_source_table_relation(session: Session):

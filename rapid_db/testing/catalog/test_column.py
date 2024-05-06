@@ -1,24 +1,22 @@
 import pytest
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session
 from ...crud.catalog import column_crud
 from ...models.catalog import Column
 from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError
 
 
-@pytest.fixture(name="session")
-def session_fixture():
-    engine = create_engine(
-        "sqlite://"
-    )
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as session:
-        yield session
-
-
-valid_column = Column.Create(name="1", data_type="1", nullable=True, length=1, precision=1, scale=1, primary_key=True,
-                             table_id=1,
-                             data_type_mapping_id=1)
+valid_column = Column.Create(
+    name="1",
+    data_type="1",
+    nullable=True,
+    length=1,
+    precision=1,
+    scale=1,
+    primary_key=True,
+    table_id=1,
+    data_type_mapping_id=1,
+)
 
 
 def test_create_column(session: Session):
@@ -36,9 +34,17 @@ def test_create_column(session: Session):
 
 def test_create_invalid_column():
     with pytest.raises(ValidationError) as exception_info:
-        _ = Column.Create(name=1, data_type=2, nullable=3, length=[], precision={}, scale=[], primary_key='',
-                          table_id=[],
-                          data_type_mapping_id={})
+        _ = Column.Create(
+            name=1,
+            data_type=2,
+            nullable=3,
+            length=[],
+            precision={},
+            scale=[],
+            primary_key="",
+            table_id=[],
+            data_type_mapping_id={},
+        )
 
     assert len(exception_info.value.errors()) == 9
 
@@ -64,13 +70,21 @@ def test_get_column_invalid(session: Session):
     with pytest.raises(ValueError) as exception_info:
         column_crud.get_model_on_id(session, model_id=1)
 
-    assert str(exception_info.value) == f"404: column with ID: 1 not found."
+    assert str(exception_info.value) == "404: column with ID: 1 not found."
 
 
 def test_get_columns(session: Session):
-    column1 = Column.Create(name="3", data_type="3", nullable=True, length=3, precision=3, scale=3, primary_key=True,
-                            table_id=3,
-                            data_type_mapping_id=3)
+    column1 = Column.Create(
+        name="3",
+        data_type="3",
+        nullable=True,
+        length=3,
+        precision=3,
+        scale=3,
+        primary_key=True,
+        table_id=3,
+        data_type_mapping_id=3,
+    )
 
     _ = column_crud.create_model(session, valid_column)
     _ = column_crud.create_model(session, column1)
@@ -85,17 +99,23 @@ def test_get_columns_invalid(session: Session):
     with pytest.raises(ValueError) as exception_info:
         column_crud.get_all_models(session)
 
-    assert str(exception_info.value) == f"404: no columns found."
+    assert str(exception_info.value) == "404: no columns found."
 
 
 def test_update_column(session: Session):
     db_column = column_crud.create_model(session, valid_column)
 
-    column_update = Column.Update(name="2", data_type="2", nullable=False, length=2, precision=2, scale=2,
-                                  primary_key=False,
-                                  data_type_mapping_id=2)
-    db_changed_column = column_crud.update_model(
-        session, db_column.id, column_update)
+    column_update = Column.Update(
+        name="2",
+        data_type="2",
+        nullable=False,
+        length=2,
+        precision=2,
+        scale=2,
+        primary_key=False,
+        data_type_mapping_id=2,
+    )
+    db_changed_column = column_crud.update_model(session, db_column.id, column_update)
 
     assert db_changed_column.name == "2"
     assert db_changed_column.data_type == "2"
@@ -107,7 +127,8 @@ def test_update_column(session: Session):
     assert not db_changed_column.primary_key
 
     db_changed_column_from_db = column_crud.get_model_on_id(
-        session, model_id=db_column.id)
+        session, model_id=db_column.id
+    )
 
     assert db_changed_column_from_db.name == "2"
     assert db_changed_column_from_db.data_type == "2"
@@ -123,8 +144,16 @@ def test_update_invalid(session: Session):
     _ = column_crud.create_model(session, valid_column)
 
     with pytest.raises(ValidationError) as exception_info:
-        _ = Column.Update(name=True, data_type=0.0, length={}, nullable=4, precision={}, scale='', primary_key=3,
-                          data_type_mapping_id='9')
+        _ = Column.Update(
+            name=True,
+            data_type=0.0,
+            length={},
+            nullable=4,
+            precision={},
+            scale="",
+            primary_key=3,
+            data_type_mapping_id="9",
+        )
 
     assert len(exception_info.value.errors()) == 7
 
@@ -152,18 +181,18 @@ def test_hard_delete_column(session: Session):
     with pytest.raises(ValueError) as exception_info:
         column_crud.get_model_on_id(session, 1)
 
-    assert str(exception_info.value) == f"404: column with ID: 1 not found."
+    assert str(exception_info.value) == "404: column with ID: 1 not found."
 
 
 def test_delete_invalid(session):
     with pytest.raises(ValueError) as exception_info:
         column_crud.delete_model(session, 1)
 
-    assert str(exception_info.value) == f"404: column with ID: 1 not found."
+    assert str(exception_info.value) == "404: column with ID: 1 not found."
 
 
 def test_name_source_id_unique(session):
-    created_table = column_crud.create_model(session, valid_column)
+    _ = column_crud.create_model(session, valid_column)
 
     with pytest.raises(IntegrityError) as _:
-        created_table = column_crud.create_model(session, valid_column)
+        _ = column_crud.create_model(session, valid_column)

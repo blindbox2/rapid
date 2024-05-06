@@ -1,20 +1,10 @@
-import pytest
-from sqlmodel import Session, SQLModel, create_engine
-from typing import TYPE_CHECKING
+from sqlmodel import Session
 
 from ...models.rapid_logging import StageLog, StageLogMessage
 from ...crud.rapid_logging import stage_log_crud, stage_log_message_crud
 
 from ...models.catalog import Table, Stage
 from ...crud.catalog import table_crud, stage_crud
-
-
-@pytest.fixture(name="session")
-def session_fixture():
-    engine = create_engine("sqlite://")
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as session:
-        yield session
 
 
 def test_stage_log_table_relation(session: Session):
