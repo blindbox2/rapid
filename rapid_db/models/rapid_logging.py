@@ -65,7 +65,7 @@ class StageLog(LoggingBase, table=True):
 
         id: int
         success: bool
-        number_of_records_processed: int | None
+        number_of_records_processed: int | None = Field(default=None)
 
     class Return(LoggingBase, table=False):
         """
