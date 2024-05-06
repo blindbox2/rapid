@@ -20,7 +20,7 @@ valid_column = Column.Create(
 
 
 def test_create_column(session: Session):
-    created_column = column_crud.create_model(session, valid_column)
+    created_column = column_crud.insert_into_table(session, valid_column)
 
     assert created_column.id == 1
     assert created_column.name == "1"
@@ -50,9 +50,9 @@ def test_create_invalid_column():
 
 
 def test_get_column(session: Session):
-    _ = column_crud.create_model(session, valid_column)
+    _ = column_crud.insert_into_table(session, valid_column)
 
-    db_column = column_crud.get_model_on_id(session, 1)
+    db_column = column_crud.select_on_pk(session, 1)
 
     assert db_column.id == 1
     assert db_column.name == "1"
@@ -68,7 +68,7 @@ def test_get_column(session: Session):
 
 def test_get_column_invalid(session: Session):
     with pytest.raises(ValueError) as exception_info:
-        column_crud.get_model_on_id(session, model_id=1)
+        column_crud.select_on_pk(session, model_id=1)
 
     assert str(exception_info.value) == "404: column with ID: 1 not found."
 
@@ -86,10 +86,10 @@ def test_get_columns(session: Session):
         data_type_mapping_id=3,
     )
 
-    _ = column_crud.create_model(session, valid_column)
-    _ = column_crud.create_model(session, column1)
+    _ = column_crud.insert_into_table(session, valid_column)
+    _ = column_crud.insert_into_table(session, column1)
 
-    db_columns = column_crud.get_all_models(session)
+    db_columns = column_crud.select_all(session)
     assert len(db_columns) == 2
     assert db_columns[0].id == 1
     assert db_columns[1].id == 2
@@ -97,13 +97,13 @@ def test_get_columns(session: Session):
 
 def test_get_columns_invalid(session: Session):
     with pytest.raises(ValueError) as exception_info:
-        column_crud.get_all_models(session)
+        column_crud.select_all(session)
 
     assert str(exception_info.value) == "404: no columns found."
 
 
 def test_update_column(session: Session):
-    db_column = column_crud.create_model(session, valid_column)
+    db_column = column_crud.insert_into_table(session, valid_column)
 
     column_update = Column.Update(
         name="2",
@@ -115,7 +115,7 @@ def test_update_column(session: Session):
         primary_key=False,
         data_type_mapping_id=2,
     )
-    db_changed_column = column_crud.update_model(session, db_column.id, column_update)
+    db_changed_column = column_crud.update_table_on_pk(session, db_column.id, column_update)
 
     assert db_changed_column.name == "2"
     assert db_changed_column.data_type == "2"
@@ -126,7 +126,7 @@ def test_update_column(session: Session):
     assert db_changed_column.data_type_mapping_id == 2
     assert not db_changed_column.primary_key
 
-    db_changed_column_from_db = column_crud.get_model_on_id(
+    db_changed_column_from_db = column_crud.select_on_pk(
         session, model_id=db_column.id
     )
 
@@ -141,7 +141,7 @@ def test_update_column(session: Session):
 
 
 def test_update_invalid(session: Session):
-    _ = column_crud.create_model(session, valid_column)
+    _ = column_crud.insert_into_table(session, valid_column)
 
     with pytest.raises(ValidationError) as exception_info:
         _ = Column.Update(
@@ -159,40 +159,40 @@ def test_update_invalid(session: Session):
 
 
 def test_soft_delete_column(session: Session):
-    column_crud.create_model(session, valid_column)
+    column_crud.insert_into_table(session, valid_column)
 
-    db_column = column_crud.get_model_on_id(session, model_id=1)
+    db_column = column_crud.select_on_pk(session, model_id=1)
     assert db_column.is_active
 
-    column_crud.delete_model(session, model_id=1)
-    db_deleted_column = column_crud.get_model_on_id(session, model_id=1)
+    column_crud.delete_from_table(session, model_id=1)
+    db_deleted_column = column_crud.select_on_pk(session, model_id=1)
 
     assert not db_deleted_column.is_active
 
 
 def test_hard_delete_column(session: Session):
-    _ = column_crud.create_model(session, valid_column)
+    _ = column_crud.insert_into_table(session, valid_column)
 
-    db_column = column_crud.get_model_on_id(session, model_id=1)
+    db_column = column_crud.select_on_pk(session, model_id=1)
     assert db_column.is_active
 
-    column_crud.delete_model(session, model_id=1, hard_delete=True)
+    column_crud.delete_from_table(session, model_id=1, hard_delete=True)
 
     with pytest.raises(ValueError) as exception_info:
-        column_crud.get_model_on_id(session, 1)
+        column_crud.select_on_pk(session, 1)
 
     assert str(exception_info.value) == "404: column with ID: 1 not found."
 
 
 def test_delete_invalid(session):
     with pytest.raises(ValueError) as exception_info:
-        column_crud.delete_model(session, 1)
+        column_crud.delete_from_table(session, 1)
 
     assert str(exception_info.value) == "404: column with ID: 1 not found."
 
 
 def test_name_source_id_unique(session):
-    _ = column_crud.create_model(session, valid_column)
+    _ = column_crud.insert_into_table(session, valid_column)
 
     with pytest.raises(IntegrityError) as _:
-        _ = column_crud.create_model(session, valid_column)
+        _ = column_crud.insert_into_table(session, valid_column)

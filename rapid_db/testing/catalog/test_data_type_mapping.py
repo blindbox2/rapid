@@ -16,7 +16,7 @@ valid_data_type_mapping = DataTypeMapping.Create(
 
 
 def test_create_data_type_mapping(session: Session):
-    created_data_type_mapping = data_type_mapping_crud.create_model(
+    created_data_type_mapping = data_type_mapping_crud.insert_into_table(
         session, valid_data_type_mapping
     )
 
@@ -42,9 +42,9 @@ def test_create_invalid_data_type_mapping():
 
 
 def test_get_data_type_mapping(session: Session):
-    _ = data_type_mapping_crud.create_model(session, valid_data_type_mapping)
+    _ = data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
 
-    db_data_type_mapping = data_type_mapping_crud.get_model_on_id(session, 1)
+    db_data_type_mapping = data_type_mapping_crud.select_on_pk(session, 1)
 
     assert db_data_type_mapping.id == 1
     assert db_data_type_mapping.source_id == 1
@@ -56,7 +56,7 @@ def test_get_data_type_mapping(session: Session):
 
 def test_get_data_type_mapping_invalid(session: Session):
     with pytest.raises(ValueError) as exception_info:
-        data_type_mapping_crud.get_model_on_id(session, model_id=1)
+        data_type_mapping_crud.select_on_pk(session, model_id=1)
 
     assert str(exception_info.value) == "404: data_type_mapping with ID: 1 not found."
 
@@ -70,10 +70,10 @@ def test_get_data_type_mappings(session: Session):
         source_id=2,
     )
 
-    _ = data_type_mapping_crud.create_model(session, valid_data_type_mapping)
-    _ = data_type_mapping_crud.create_model(session, data_type_mapping1)
+    _ = data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
+    _ = data_type_mapping_crud.insert_into_table(session, data_type_mapping1)
 
-    db_data_type_mappings = data_type_mapping_crud.get_all_models(session)
+    db_data_type_mappings = data_type_mapping_crud.select_all(session)
     assert len(db_data_type_mappings) == 2
     assert db_data_type_mappings[0].id == 1
     assert db_data_type_mappings[1].id == 2
@@ -81,13 +81,13 @@ def test_get_data_type_mappings(session: Session):
 
 def test_get_data_type_mappings_invalid(session: Session):
     with pytest.raises(ValueError) as exception_info:
-        data_type_mapping_crud.get_all_models(session)
+        data_type_mapping_crud.select_all(session)
 
     assert str(exception_info.value) == "404: no data_type_mappings found."
 
 
 def test_update_data_type_mapping(session: Session):
-    db_data_type_mapping = data_type_mapping_crud.create_model(
+    db_data_type_mapping = data_type_mapping_crud.insert_into_table(
         session, valid_data_type_mapping
     )
 
@@ -98,7 +98,7 @@ def test_update_data_type_mapping(session: Session):
         parquet_type="2",
         source_id=2,
     )
-    db_changed_data_type_mapping = data_type_mapping_crud.update_model(
+    db_changed_data_type_mapping = data_type_mapping_crud.update_table_on_pk(
         session, db_data_type_mapping.id, data_type_mapping_update
     )
 
@@ -108,7 +108,7 @@ def test_update_data_type_mapping(session: Session):
     assert db_changed_data_type_mapping.sql_type == "2"
     assert db_changed_data_type_mapping.parquet_type == "2"
 
-    _ = data_type_mapping_crud.get_model_on_id(
+    _ = data_type_mapping_crud.select_on_pk(
         session, model_id=db_data_type_mapping.id
     )
 
@@ -120,7 +120,7 @@ def test_update_data_type_mapping(session: Session):
 
 
 def test_update_invalid(session: Session):
-    _ = data_type_mapping_crud.create_model(session, valid_data_type_mapping)
+    _ = data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
 
     with pytest.raises(ValidationError) as exception_info:
         _ = DataTypeMapping.Update(
@@ -135,13 +135,13 @@ def test_update_invalid(session: Session):
 
 
 def test_soft_delete_data_type_mapping(session: Session):
-    data_type_mapping_crud.create_model(session, valid_data_type_mapping)
+    data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
 
-    db_data_type_mapping = data_type_mapping_crud.get_model_on_id(session, model_id=1)
+    db_data_type_mapping = data_type_mapping_crud.select_on_pk(session, model_id=1)
     assert db_data_type_mapping.is_active
 
-    data_type_mapping_crud.delete_model(session, model_id=1)
-    db_deleted_data_type_mapping = data_type_mapping_crud.get_model_on_id(
+    data_type_mapping_crud.delete_from_table(session, model_id=1)
+    db_deleted_data_type_mapping = data_type_mapping_crud.select_on_pk(
         session, model_id=1
     )
 
@@ -149,28 +149,28 @@ def test_soft_delete_data_type_mapping(session: Session):
 
 
 def test_hard_delete_data_type_mapping(session: Session):
-    _ = data_type_mapping_crud.create_model(session, valid_data_type_mapping)
+    _ = data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
 
-    db_data_type_mapping = data_type_mapping_crud.get_model_on_id(session, model_id=1)
+    db_data_type_mapping = data_type_mapping_crud.select_on_pk(session, model_id=1)
     assert db_data_type_mapping.is_active
 
-    data_type_mapping_crud.delete_model(session, model_id=1, hard_delete=True)
+    data_type_mapping_crud.delete_from_table(session, model_id=1, hard_delete=True)
 
     with pytest.raises(ValueError) as exception_info:
-        data_type_mapping_crud.get_model_on_id(session, 1)
+        data_type_mapping_crud.select_on_pk(session, 1)
 
     assert str(exception_info.value) == "404: data_type_mapping with ID: 1 not found."
 
 
 def test_delete_invalid(session):
     with pytest.raises(ValueError) as exception_info:
-        data_type_mapping_crud.delete_model(session, 1)
+        data_type_mapping_crud.delete_from_table(session, 1)
 
     assert str(exception_info.value) == "404: data_type_mapping with ID: 1 not found."
 
 
 def test_name_source_id_unique(session):
-    _ = data_type_mapping_crud.create_model(session, valid_data_type_mapping)
+    _ = data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)
 
     with pytest.raises(IntegrityError) as _:
-        _ = data_type_mapping_crud.create_model(session, valid_data_type_mapping)
+        _ = data_type_mapping_crud.insert_into_table(session, valid_data_type_mapping)

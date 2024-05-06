@@ -15,7 +15,7 @@ def test_source_table_relation(session: Session):
         description="test source description",
         connection_details="test connection details",
     )
-    db_source = source_crud.create_model(session, source)
+    db_source = source_crud.insert_into_table(session, source)
 
     table = Table.Create(
         name="test table",
@@ -33,16 +33,16 @@ def test_source_table_relation(session: Session):
         source_id=db_source.id,
     )
 
-    db_table = table_crud.create_model(session, table)
-    _ = table_crud.create_model(session, table1)
+    db_table = table_crud.insert_into_table(session, table)
+    _ = table_crud.insert_into_table(session, table1)
 
     # Check that the source has related tables
-    source = source_crud.get_model_on_id(session, model_id=db_source.id)
+    source = source_crud.select_on_pk(session, model_id=db_source.id)
     assert len(source.source_tables) == 2
     assert source.source_tables[0].id == db_table.id
 
     # Check that the table has a related stage
-    table = table_crud.get_model_on_id(session, model_id=db_table.id)
+    table = table_crud.select_on_pk(session, model_id=db_table.id)
     assert table.source_id == source.id
     assert table.table_source.id == source.id
 
@@ -53,7 +53,7 @@ def test_source_table_relation(session: Session):
 
 def test_stage_table_relation(session: Session):
     stage = Stage.Create(name="test stage", description="test stage description")
-    db_stage = stage_crud.create_model(session, stage)
+    db_stage = stage_crud.insert_into_table(session, stage)
 
     table = Table.Create(
         name="test table",
@@ -71,16 +71,16 @@ def test_stage_table_relation(session: Session):
         source_id=9,
     )
 
-    db_table = table_crud.create_model(session, table)
-    _ = table_crud.create_model(session, table1)
+    db_table = table_crud.insert_into_table(session, table)
+    _ = table_crud.insert_into_table(session, table1)
 
     # Check that the stage has related tables
-    stage = stage_crud.get_model_on_id(session, model_id=db_stage.id)
+    stage = stage_crud.select_on_pk(session, model_id=db_stage.id)
     assert len(stage.stage_tables) == 2
     assert stage.stage_tables[0].id == db_table.id
 
     # Check that the table has a related stage
-    table = table_crud.get_model_on_id(session, model_id=db_table.id)
+    table = table_crud.select_on_pk(session, model_id=db_table.id)
     assert table.stage_id == stage.id
     assert table.table_stage.id == stage.id
 
@@ -97,7 +97,7 @@ def test_table_column_relation(session: Session):
         stage_id=9,
         source_id=9,
     )
-    db_table = table_crud.create_model(session, table)
+    db_table = table_crud.insert_into_table(session, table)
 
     column = Column.Create(
         name="test column",
@@ -125,16 +125,16 @@ def test_table_column_relation(session: Session):
         data_type_mapping_id=9,
     )
 
-    _ = column_crud.create_model(session, column)
-    _ = column_crud.create_model(session, column1)
+    _ = column_crud.insert_into_table(session, column)
+    _ = column_crud.insert_into_table(session, column1)
 
     # Check that the table has related columns
-    table = table_crud.get_model_on_id(session, model_id=db_table.id)
+    table = table_crud.select_on_pk(session, model_id=db_table.id)
     assert len(table.table_columns) == 2
     assert table.table_columns[0].id == db_table.id
 
     # Check that the column has a related table
-    column = column_crud.get_model_on_id(session, model_id=db_table.id)
+    column = column_crud.select_on_pk(session, model_id=db_table.id)
     assert column.table_id == table.id
     assert column.column_table.id == table.id
 
@@ -151,7 +151,7 @@ def test_data_type_mapping_column_relation(session: Session):
         parquet_type="test parquet type",
         source_id=1,
     )
-    db_data_type_mapping = data_type_mapping_crud.create_model(
+    db_data_type_mapping = data_type_mapping_crud.insert_into_table(
         session, data_type_mapping
     )
 
@@ -168,17 +168,17 @@ def test_data_type_mapping_column_relation(session: Session):
         data_type_mapping_id=db_data_type_mapping.id,
     )
 
-    _ = column_crud.create_model(session, column)
+    _ = column_crud.insert_into_table(session, column)
 
     # Check that the data_type_mapping has related columns
-    data_type_mapping = data_type_mapping_crud.get_model_on_id(
+    data_type_mapping = data_type_mapping_crud.select_on_pk(
         session, model_id=db_data_type_mapping.id
     )
     assert len(data_type_mapping.data_type_mapping_columns) == 1
     assert data_type_mapping.data_type_mapping_columns[0].id == db_data_type_mapping.id
 
     # Check that the column has a related data_type_mapping
-    column = column_crud.get_model_on_id(session, model_id=db_data_type_mapping.id)
+    column = column_crud.select_on_pk(session, model_id=db_data_type_mapping.id)
     assert column.data_type_mapping_id == data_type_mapping.id
     assert column.column_data_type_mapping.id == data_type_mapping.id
 
@@ -193,7 +193,7 @@ def test_data_type_mapping_source_relation(session: Session):
         description="test description",
         connection_details="test details",
     )
-    db_source = source_crud.create_model(session, source)
+    db_source = source_crud.insert_into_table(session, source)
 
     data_type_mapping = DataTypeMapping.Create(
         source_data_type="test source data type",
@@ -209,16 +209,16 @@ def test_data_type_mapping_source_relation(session: Session):
         parquet_type="test parquet type",
         source_id=db_source.id,
     )
-    _ = data_type_mapping_crud.create_model(session, data_type_mapping)
-    _ = data_type_mapping_crud.create_model(session, data_type_mapping1)
+    _ = data_type_mapping_crud.insert_into_table(session, data_type_mapping)
+    _ = data_type_mapping_crud.insert_into_table(session, data_type_mapping1)
 
     # Check that the data_type_mapping has related data_type_mappings
-    source = source_crud.get_model_on_id(session, model_id=db_source.id)
+    source = source_crud.select_on_pk(session, model_id=db_source.id)
     assert len(source.source_data_type_mappings) == 2
     assert source.source_data_type_mappings[0].id == db_source.id
 
     # Check that the data_type_mapping has a related source
-    data_type_mapping = data_type_mapping_crud.get_model_on_id(
+    data_type_mapping = data_type_mapping_crud.select_on_pk(
         session, model_id=db_source.id
     )
     assert data_type_mapping.source_id == source.id

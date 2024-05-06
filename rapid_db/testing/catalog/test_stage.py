@@ -10,7 +10,7 @@ valid_stage = Stage.Create(name="1", description="1")
 
 
 def test_create_stage(session: Session):
-    created_stage = stage_crud.create_model(session, valid_stage)
+    created_stage = stage_crud.insert_into_table(session, valid_stage)
 
     assert created_stage.id == 1
     assert created_stage.name == "1"
@@ -25,9 +25,9 @@ def test_create_invalid_stage():
 
 
 def test_get_stage(session: Session):
-    _ = stage_crud.create_model(session, valid_stage)
+    _ = stage_crud.insert_into_table(session, valid_stage)
 
-    db_stage = stage_crud.get_model_on_id(session, 1)
+    db_stage = stage_crud.select_on_pk(session, 1)
 
     assert db_stage.id == 1
     assert db_stage.name == "1"
@@ -36,7 +36,7 @@ def test_get_stage(session: Session):
 
 def test_get_stage_invalid(session: Session):
     with pytest.raises(ValueError) as exception_info:
-        stage_crud.get_model_on_id(session, model_id=1)
+        stage_crud.select_on_pk(session, model_id=1)
 
     assert str(exception_info.value) == "404: stage with ID: 1 not found."
 
@@ -44,10 +44,10 @@ def test_get_stage_invalid(session: Session):
 def test_get_stages(session: Session):
     stage1 = Stage.Create(name="2", description="2")
 
-    _ = stage_crud.create_model(session, valid_stage)
-    _ = stage_crud.create_model(session, stage1)
+    _ = stage_crud.insert_into_table(session, valid_stage)
+    _ = stage_crud.insert_into_table(session, stage1)
 
-    db_stages = stage_crud.get_all_models(session)
+    db_stages = stage_crud.select_all(session)
     assert len(db_stages) == 2
     assert db_stages[0].id == 1
     assert db_stages[1].id == 2
@@ -55,28 +55,28 @@ def test_get_stages(session: Session):
 
 def test_get_stages_invalid(session: Session):
     with pytest.raises(ValueError) as exception_info:
-        stage_crud.get_all_models(session)
+        stage_crud.select_all(session)
 
     assert str(exception_info.value) == "404: no stages found."
 
 
 def test_update_stage(session: Session):
-    db_stage = stage_crud.create_model(session, valid_stage)
+    db_stage = stage_crud.insert_into_table(session, valid_stage)
 
     stage_update = Stage.Update(name="2", description="2")
-    db_changed_stage = stage_crud.update_model(session, db_stage.id, stage_update)
+    db_changed_stage = stage_crud.update_table_on_pk(session, db_stage.id, stage_update)
 
     assert db_changed_stage.name == "2"
     assert db_changed_stage.description == "2"
 
-    db_changed_stage_from_db = stage_crud.get_model_on_id(session, model_id=db_stage.id)
+    db_changed_stage_from_db = stage_crud.select_on_pk(session, model_id=db_stage.id)
 
     assert db_changed_stage_from_db.name == "2"
     assert db_changed_stage_from_db.description == "2"
 
 
 def test_update_invalid(session: Session):
-    _ = stage_crud.create_model(session, valid_stage)
+    _ = stage_crud.insert_into_table(session, valid_stage)
 
     with pytest.raises(ValidationError) as exception_info:
         _ = Stage.Update(name=1, description=True)
@@ -85,39 +85,39 @@ def test_update_invalid(session: Session):
 
 
 def test_soft_delete_stage(session: Session):
-    stage_crud.create_model(session, valid_stage)
+    stage_crud.insert_into_table(session, valid_stage)
 
-    db_stage = stage_crud.get_model_on_id(session, model_id=1)
+    db_stage = stage_crud.select_on_pk(session, model_id=1)
     assert db_stage.is_active
 
-    stage_crud.delete_model(session, model_id=1)
-    db_deleted_stage = stage_crud.get_model_on_id(session, model_id=1)
+    stage_crud.delete_from_table(session, model_id=1)
+    db_deleted_stage = stage_crud.select_on_pk(session, model_id=1)
 
     assert not db_deleted_stage.is_active
 
 
 def test_hard_delete_stage(session: Session):
-    _ = stage_crud.create_model(session, valid_stage)
+    _ = stage_crud.insert_into_table(session, valid_stage)
 
-    db_stage = stage_crud.get_model_on_id(session, model_id=1)
+    db_stage = stage_crud.select_on_pk(session, model_id=1)
     assert db_stage.is_active
 
-    stage_crud.delete_model(session, model_id=1, hard_delete=True)
+    stage_crud.delete_from_table(session, model_id=1, hard_delete=True)
 
     with pytest.raises(ValueError) as exception_info:
-        stage_crud.get_model_on_id(session, 1)
+        stage_crud.select_on_pk(session, 1)
 
     assert str(exception_info.value) == "404: stage with ID: 1 not found."
 
 
 def test_delete_invalid(session):
     with pytest.raises(ValueError) as exception_info:
-        stage_crud.delete_model(session, 1)
+        stage_crud.delete_from_table(session, 1)
 
     assert str(exception_info.value) == "404: stage with ID: 1 not found."
 
 
 def test_stage_unique(session):
-    _ = stage_crud.create_model(session, valid_stage)
+    _ = stage_crud.insert_into_table(session, valid_stage)
     with pytest.raises(IntegrityError) as _:
-        _ = stage_crud.create_model(session, valid_stage)
+        _ = stage_crud.insert_into_table(session, valid_stage)

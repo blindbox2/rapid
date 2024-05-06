@@ -18,7 +18,7 @@ class GenericCrud(
         self.model = model
         self.name = model.__tablename__
 
-    def create_model(
+    def insert_into_table(
         self, session: Session, model: CreateSchemaType
     ) -> ReturnSchemaType:
         logger.info(f"Creating new {self.name} record")
@@ -29,7 +29,7 @@ class GenericCrud(
         logger.info(f"Created new {self.name} record with ID: {db_model.id}")
         return db_model
 
-    def get_all_models(
+    def select_all(
         self, session: Session, offset: int = 0, limit: int = 100
     ) -> List[ReturnSchemaType]:
         logger.info(
@@ -41,18 +41,18 @@ class GenericCrud(
             raise ValueError(f"404: no {self.name} found.")
         return models
 
-    def get_model_on_id(self, session: Session, model_id: int) -> ReturnSchemaType:
+    def select_on_pk(self, session: Session, model_id: int) -> ReturnSchemaType:
         db_model = session.get(self.model, model_id)
         if not db_model:
             logger.warning(f"{self.name[:-1]} record with ID: {model_id} not found")
             raise ValueError(f"404: {self.name[:-1]} with ID: {model_id} not found.")
         return db_model
 
-    def update_model(
+    def update_table_on_pk(
         self, session: Session, model_id: int, model: UpdateSchemaType
     ) -> ReturnSchemaType:
         logger.info(f"Updating {self.name[:-1]} record with ID: {model_id}")
-        db_model = self.get_model_on_id(session, model_id)
+        db_model = self.select_on_pk(session, model_id)
         model_data = model.model_dump(exclude_unset=True)
         db_model.sqlmodel_update(model_data)
         session.add(db_model)
@@ -61,11 +61,11 @@ class GenericCrud(
         logger.info(f"Updated {self.name[:-1]} record with ID: {model_id}")
         return db_model
 
-    def delete_model(
+    def delete_from_table(
         self, session: Session, model_id: int, hard_delete: bool = False
     ) -> dict:
         logger.info(f"Deleting {self.name[:-1]} record with ID: {model_id}")
-        db_model = self.get_model_on_id(session, model_id)
+        db_model = self.select_on_pk(session, model_id)
 
         if hard_delete:
             logging.info(

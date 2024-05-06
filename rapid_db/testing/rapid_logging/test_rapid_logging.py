@@ -15,7 +15,7 @@ def test_stage_log_table_relation(session: Session):
         stage_id=1,
         source_id=1,
     )
-    db_table = table_crud.create_model(session=session, model=table)
+    db_table = table_crud.insert_into_table(session=session, model=table)
 
     stage_log = StageLog.Open(table_id=db_table.id, stage_id=1, cdc_key=1)
     db_stage_log = stage_log_crud.open_stage_log(session=session, stage_log=stage_log)
@@ -30,7 +30,7 @@ def test_stage_log_table_relation(session: Session):
 
 def test_stage_log_stage_relation(session: Session):
     stage = Stage.Create(name="test stage", description="test stage description")
-    db_stage = stage_crud.create_model(session=session, model=stage)
+    db_stage = stage_crud.insert_into_table(session=session, model=stage)
 
     stage_log = StageLog.Open(table_id=1, stage_id=db_stage.id, cdc_key=1)
     db_stage_log = stage_log_crud.open_stage_log(session=session, stage_log=stage_log)
