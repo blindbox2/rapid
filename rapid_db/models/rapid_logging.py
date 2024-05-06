@@ -49,29 +49,17 @@ class StageLog(LoggingBase, table=True):
     number_of_records_processed: int | None = Field(default=None)
 
     class Open(LoggingBase, table=False):
-        """
-        Represents the data required to create a new stage log.
-        """
-
         table_id: int
         stage_id: int
         cdc_key: int
         run_id: str | None = Field(max_length=256, default=None)
 
     class Close(LoggingBase, table=False):
-        """
-        Represents the data required to update an existing stage log.
-        """
-
         id: int
         success: bool
         number_of_records_processed: int | None = Field(default=None)
 
     class Return(LoggingBase, table=False):
-        """
-        Represents the data returned when querying a stage log.
-        """
-
         id: int
         table_id: int
         stage_id: int
