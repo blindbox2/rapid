@@ -91,15 +91,14 @@ def test_update_data_type_mapping(session: Session):
     )
 
     data_type_mapping_update = DataTypeMapping.Update(
+        id=1,
         source_data_type="2",
         source_data_format="2",
         sql_type="2",
         parquet_type="2",
         source_id=2,
     )
-    db_changed_data_type_mapping = data_type_mapping_crud.update_table_on_pk(
-        session, db_data_type_mapping.id, data_type_mapping_update
-    )
+    db_changed_data_type_mapping = data_type_mapping_crud.update_table_on_pk(session, data_type_mapping_update)
 
     assert db_changed_data_type_mapping.source_data_type == "2"
     assert db_changed_data_type_mapping.source_id == 2
@@ -113,6 +112,7 @@ def test_update_invalid(session: Session):
 
     with pytest.raises(ValidationError) as exception_info:
         DataTypeMapping.Update(
+            id="a",
             source_data_type=False,
             source_data_format=1,
             sql_type=4,
@@ -120,7 +120,7 @@ def test_update_invalid(session: Session):
             source_id="a",
         )
 
-    assert len(exception_info.value.errors()) == 5
+    assert len(exception_info.value.errors()) == 6
 
 
 def test_soft_delete_data_type_mapping(session: Session):

@@ -64,10 +64,10 @@ def test_get_sources_invalid(session: Session):
 def test_update_source(session: Session):
     db_source = source_crud.insert_into_table(session, valid_source)
 
-    source_update = Source.Update(name="2", description="2", connection_details="2")
-    db_changed_source = source_crud.update_table_on_pk(
-        session, db_source.id, source_update
+    source_update = Source.Update(
+        id=1, name="2", description="2", connection_details="2"
     )
+    db_changed_source = source_crud.update_table_on_pk(session, source_update)
 
     assert db_changed_source.name == "2"
     assert db_changed_source.description == "2"
@@ -78,7 +78,7 @@ def test_update_invalid(session: Session):
     source_crud.insert_into_table(session, valid_source)
 
     with pytest.raises(ValidationError) as exception_info:
-        Source.Update(name=1, description=True, connection_details=1.0)
+        Source.Update(id=1, name=1, description=True, connection_details=1.0)
 
     assert len(exception_info.value.errors()) == 3
 

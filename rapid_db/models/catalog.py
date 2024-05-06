@@ -39,6 +39,7 @@ class Source(CatalogBase, SourceBase, table=True):
         is_active: bool
 
     class Update(SQLModel, table=False):
+        id: int
         name: str | None = Field(
             max_length=64, sa_type=sa.String(length=64), default=None
         )
@@ -68,6 +69,7 @@ class Stage(StageBase, CatalogBase, table=True):
         id: int
 
     class Update(SQLModel, table=False):
+        id: int
         name: str | None = Field(
             max_length=64, sa_type=sa.String(length=64), default=None
         )
@@ -110,6 +112,7 @@ class Table(TableBase, CatalogBase, table=True):
         is_active: bool
 
     class Update(SQLModel, table=False):
+        id: int
         name: str | None = Field(
             max_length=64, sa_type=sa.String(length=64), default=None
         )
@@ -156,6 +159,7 @@ class Column(ColumnBase, CatalogBase, table=True):
         data_type_mapping_id: int
 
     class Update(SQLModel, table=False):
+        id: int
         name: str | None = Field(
             max_length=64, sa_type=sa.String(length=64), default=None
         )
@@ -210,6 +214,7 @@ class DataTypeMapping(DataTypeMappingBase, CatalogBase, table=True):
         is_active: bool
 
     class Update(SQLModel, table=False):
+        id: int
         source_data_type: str | None = Field(
             max_length=64, sa_type=sa.String(length=64), default=None
         )

@@ -1,4 +1,4 @@
-from sqlmodel import Session, select
+from sqlmodel import Session, select, SQLModel
 from typing import Generic, TypeVar, List
 import logging
 
@@ -49,16 +49,16 @@ class GenericCrud(
         return db_model
 
     def update_table_on_pk(
-        self, session: Session, model_id: int, model: UpdateSchemaType
+        self, session: Session, model: UpdateSchemaType
     ) -> ReturnSchemaType:
-        logger.info(f"Updating {self.name[:-1]} record with ID: {model_id}")
-        db_model = self.select_on_pk(session, model_id)
+        logger.info(f"Updating {self.name[:-1]} record with ID: {model.id}")
+        db_model = self.select_on_pk(session, model.id)
         model_data = model.model_dump(exclude_unset=True)
         db_model.sqlmodel_update(model_data)
         session.add(db_model)
         session.commit()
         session.refresh(db_model)
-        logger.info(f"Updated {self.name[:-1]} record with ID: {model_id}")
+        logger.info(f"Updated {self.name[:-1]} record with ID: {model.id}")
         return db_model
 
     def delete_from_table(

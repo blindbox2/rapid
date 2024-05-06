@@ -70,10 +70,10 @@ def test_get_tables_invalid(session: Session):
 
 
 def test_update_table(session: Session):
-    db_table = table_crud.insert_into_table(session, valid_table)
+    table_crud.insert_into_table(session, valid_table)
 
-    table_update = Table.Update(name="2", description="2", source_location="2")
-    db_changed_table = table_crud.update_table_on_pk(session, db_table.id, table_update)
+    table_update = Table.Update(id=1, name="2", description="2", source_location="2")
+    db_changed_table = table_crud.update_table_on_pk(session, table_update)
 
     assert db_changed_table.name == "2"
     assert db_changed_table.description == "2"
@@ -84,7 +84,7 @@ def test_update_invalid(session: Session):
     table_crud.insert_into_table(session, valid_table)
 
     with pytest.raises(ValidationError) as exception_info:
-        Table.Update(name=True, description=0.0, source_location={})
+        Table.Update(id=1, name=True, description=0.0, source_location={})
 
     assert len(exception_info.value.errors()) == 3
 

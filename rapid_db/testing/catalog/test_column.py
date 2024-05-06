@@ -105,6 +105,7 @@ def test_update_column(session: Session):
     db_column = column_crud.insert_into_table(session, valid_column)
 
     column_update = Column.Update(
+        id=db_column.id,
         name="2",
         data_type="2",
         nullable=False,
@@ -114,9 +115,7 @@ def test_update_column(session: Session):
         primary_key=False,
         data_type_mapping_id=2,
     )
-    db_changed_column = column_crud.update_table_on_pk(
-        session, db_column.id, column_update
-    )
+    db_changed_column = column_crud.update_table_on_pk(session, column_update)
 
     assert db_changed_column.name == "2"
     assert db_changed_column.data_type == "2"
@@ -133,6 +132,7 @@ def test_update_invalid(session: Session):
 
     with pytest.raises(ValidationError) as exception_info:
         Column.Update(
+            id="a",
             name=True,
             data_type=0.0,
             length={},
@@ -143,7 +143,7 @@ def test_update_invalid(session: Session):
             data_type_mapping_id="9",
         )
 
-    assert len(exception_info.value.errors()) == 7
+    assert len(exception_info.value.errors()) == 8
 
 
 def test_soft_delete_column(session: Session):

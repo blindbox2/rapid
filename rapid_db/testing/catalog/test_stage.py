@@ -62,8 +62,8 @@ def test_get_stages_invalid(session: Session):
 def test_update_stage(session: Session):
     db_stage = stage_crud.insert_into_table(session, valid_stage)
 
-    stage_update = Stage.Update(name="2", description="2")
-    db_changed_stage = stage_crud.update_table_on_pk(session, db_stage.id, stage_update)
+    stage_update = Stage.Update(id=1, name="2", description="2")
+    db_changed_stage = stage_crud.update_table_on_pk(session, stage_update)
 
     assert db_changed_stage.name == "2"
     assert db_changed_stage.description == "2"
@@ -73,7 +73,7 @@ def test_update_invalid(session: Session):
     stage_crud.insert_into_table(session, valid_stage)
 
     with pytest.raises(ValidationError) as exception_info:
-        Stage.Update(name=1, description=True)
+        Stage.Update(id=1, name=1, description=True)
 
     assert len(exception_info.value.errors()) == 2
 
