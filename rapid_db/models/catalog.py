@@ -87,7 +87,9 @@ class TableBase(SQLModel, table=False):
 
 class Table(TableBase, CatalogBase, table=True):
     __table_args__ = (
-        UniqueConstraint("name", "source_id", name="unique_table_name_source_id"),
+        UniqueConstraint(
+            "name", "source_id", "stage_id", name="unique_table_name_source_id_stage_id"
+        ),
     )
     stage_id: int = Field(foreign_key="stages.id", index=True)
     table_stage: "Stage" = Relationship(back_populates="stage_tables")

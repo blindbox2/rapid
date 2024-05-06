@@ -129,7 +129,7 @@ def test_delete_invalid(session):
     assert str(exception_info.value) == "404: table with ID: 1 not found."
 
 
-def test_name_source_id_unique(session):
+def test_table_name_source_id_stage_id_unique(session):
     _ = table_crud.insert_into_table(session, valid_table)
 
     with pytest.raises(IntegrityError) as _:
